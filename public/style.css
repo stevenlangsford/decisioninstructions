@@ -3,7 +3,7 @@ body {
     color:black;
     font-size:1.5em;
 }
-h1 {
+h1, h2, h3, h4, h5, h6{
     margin-left:auto;
     margin-right:auto;
     text-align:center;
@@ -12,6 +12,18 @@ p {
     margin-left:auto;
     margin-right:auto; 
  }
+#infodisplay{
+    margin:auto;
+    width:70%;
+}
+.optiondiv{
+    border:1px solid blue;
+    display:block;
+    float:left;
+    width:250px;
+    margin:auto;
+    padding:29px;
+}
 
 .centered, trialdiv {
     margin-left:auto;
