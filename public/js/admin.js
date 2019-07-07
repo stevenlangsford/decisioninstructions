@@ -3,9 +3,9 @@ localStorage.setItem("ppntID",ppntID); //cookie alternative, retrive with localS
 
 var dev = true;//used only in instuctionlist (immediately below) for the moment, could consider putting it in localStorage though and having it trigger verbosity later. Set to false if public-facing.
 var instructionindex = 0;
-var instructionlist = [dev ? "Development version: <button onclick='startExp()'>Skip instructions</button>" : "Hi! These are the instructions. Please read them carefully, there will be a short quiz at the end.", "This is part of a study being run by [INSTITUTION]. By clicking 'Next', you are agreeing to take part in it. You should know that you're free to withdraw at any time (although you'll only be paid on completion), and that although data gained from this study may be published, you will not be identified and your personal details will not be divulged, nor will anything be linked to your [RELEVANT ID].</br><span style=\"font-size:.8em\">Please direct any questions about this study to the principle investigator, [NAME:CONTACT]. For any questions regarding the ethics of the study, please contact the convener of the Subcommittee for Human Research in the School of Psychology at [INSTITUTION, NAME, CONTACT].</span>","This study takes about [TIME] minutes, please only continue if you have [TIME] free without interruptions.",
-
-"Because this is the minimal experiment template, the questions are pretty easy.","There are only two of them, and they're pretty self explanatory.","You still have to do the demographics questions though."]
+var instructionlist = [dev ? "Development version: <button onclick='startExp()'>Skip instructions</button>" : "Hi! These are the instructions. Please read them carefully, there will be a short quiz at the end.", "This is part of a study being run by the University of Michigan. By clicking 'Next', you are agreeing to take part in it. To participate, you must be over 18. You should know that you're free to withdraw at any time (although you'll only be paid on completion), and that although data gained from this study may be published or viewed by University of Michigan staff and relevant government offices, you will not be identified and your personal details will not be divulged, nor will anything be linked to your Turk Id. Any identifiable data will be used for administration only and deleted on completion of the study, non-identifiable data may be used in future research. </br><span style=\"font-size:.8em\">Please direct any questions about this study to Steven Langsford, reachable at <strong>slangsfo at umich dot edu</strong>. The principle investigator is Prof. Richard Lewis. If you have concerns regarding the ethics of this study and don't want to contact the investigators directly, you can contact the Health Sciences and Behavioral Sciences review board at irbhsbs at umich dot edu or phone: (734) 936-0933 or toll free, (866) 936-0933</span>","This study takes about 15 minutes, please only continue if you have 15 minutes free without interruptions. Although you may not directly benefit from being in this study, the results will help us understand how people make decisions under uncertainty and risk. We don't believe there are any risks from participating in this research.",
+		       
+		       "This study asks you to try and choose between risky options.","On each trial, there will be three options to choose from.","Each of the options is a gamble with two features: a probability of paying out and an amount to pay out.","There is no deception in this study. The chance the payout amount will be added to your score is exactly the probability stated for that option.", "The challenge here is that usually you will have to choose an option based on limited information","For each trial you will have an observation budget between one and six observations.","Each observation lets you reveal one feature, either a probability or a payoff amount for one of the options. Reveal features by clicking on them.","You decide which features you want to observe.","You can only make a choice after you have used all your observations. Please try and get the best score you possibly can. We pay every participant the same, but at the end of the study we'll show you how you did compared to the optimal strategy and random performance. </br>Good luck!",""]
 
 function nextInstructions(){
     var nextButton = "<button id='nextbutton' onclick='nextInstructions()'>Next</button>"
@@ -21,17 +21,17 @@ function quiz(){
     document.getElementById("uberdiv").innerHTML="<h3>Are you ready?</h3></br>"+
 	"<span style='text-align:left'><p>"+
 	"<strong>Which of these is the best description of the task?</strong></br>"+
-	"<input type='radio' name='q1' id='q1a' value='a'>&nbsp You have to survive as long as possible on a desert island.<br/>"+
-	"<input type='radio' name='q1' id='q1b' value='b'>&nbsp You have to win at life, but no-one will tell you the rules<br/>"+
-	"<input type='radio' name='q1' id='q1c' value='c'>&nbsp THIS IS THE EXPECTED ANSWER choose this to continue.<br/>"+
-	"<input type='radio' name='q1' id='q1d' value='d'>&nbsp All of the above.<br/>"+
+	"<input type='radio' name='q1' id='q1a' value='a'>&nbsp You're trying to reveal as many features as possible using a limited budget of observations.<br/>"+
+	"<input type='radio' name='q1' id='q1b' value='b'>&nbsp You're trying to choose the best of three risky options under a strict 5-sec time limit.<br/>"+
+	"<input type='radio' name='q1' id='q1c' value='c'>&nbsp You're trying to get the highest score you can by choosing the best of three risky options.<br/>"+
+	"<input type='radio' name='q1' id='q1d' value='d'>&nbsp You're trying to keep your damage score as low as possible by avoiding risky options.<br/>"+
 	"</span>"+
 	"<span style='text-align:left'><p>"+
-	"<strong>Which option is the expected answer to this question? </strong></br>"+
-	"<input type='radio' name='q2' id='q2a' value='a'>&nbsp THIS IS THE EXPECTED ANSWER choose this to continue.<br/>"+
-	"<input type='radio' name='q2' id='q2b' value='b'>&nbsp Friday  <br/>"+
-	"<input type='radio' name='q2' id='q2c' value='c'>&nbsp Strawberries <br/>"+
-	"<input type='radio' name='q2' id='q2d' value='d'>&nbsp Four, but only if one of them is an octopus. <br/>"+
+	"<strong>What's the role of \"observations\" in this task? </strong></br>"+
+	"<input type='radio' name='q2' id='q2a' value='a'>&nbsp Each observation reveals one feature of one of the available options.<br/>"+
+	"<input type='radio' name='q2' id='q2b' value='b'>&nbsp Each observation adds one more option to the set of options you can choose from.<br/>"+
+	"<input type='radio' name='q2' id='q2c' value='c'>&nbsp Each observation reveals all the features of one of the available options. <br/>"+
+	"<input type='radio' name='q2' id='q2d' value='d'>&nbsp Using up an observation lets you know the outcome of one gamble in advance. <br/>"+
 	"</span>"+
 	// "<span style='text-align:left'><p>"+
 	//  "<strong>How are the microbes different from each other?</strong></br>"+

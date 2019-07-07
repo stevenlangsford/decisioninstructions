@@ -16,15 +16,28 @@ p {
     margin:auto;
     width:70%;
 }
+#scoremessage{
+    margin:auto;
+    width:70%;
+    text-align:center;
+}
 .optiondiv{
+    position:relative;
     border:1px solid blue;
     display:block;
     float:left;
     width:250px;
+    height:300px;
     margin:auto;
     padding:29px;
 }
-
+.choicebutton{
+    position:absolute;
+    bottom: 0;
+}
+.revealbutton{
+    margin:auto;
+}
 .centered, trialdiv {
     margin-left:auto;
     margin-right:auto;
@@ -35,4 +48,5 @@ p {
      font-size:1.2em;
      border-radius:.5em;
      background-color:darkgrey;
+     padding:7px;
  }

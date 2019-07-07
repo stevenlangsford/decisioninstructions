@@ -16,6 +16,8 @@
       <h1>Thank you</h1>
       <p>You're done!</p>
       <p>Your completion code is:</br> <span id='completioncodespan'></span></p>
+      <div id='performancemessage'></div>    
+
     </div>
 <script>
   var symbols = ["A","B","C","D","F","G","H","J","K","L","M","N","P","Q","R","S","T","V","W","X","Y","Z","1","2","3","4","5","6","7","8","9","1","2","3","4","5","6","7","8","9"];
@@ -25,7 +27,15 @@
   function getCode(){
   return "SD"+getSymbol()+getSymbol()+getSymbol()+"LL"+getSymbol()+getSymbol()+getSymbol()+getSymbol()+"4";//some fixed vals so bad codes pop out. Zero defence against malice but sometimes folks make mistakes or write messages in the submission box.
   }
-      document.getElementById("completioncodespan").innerHTML=(getCode());
+  function getPerformance(){
+  myscore  = localStorage.getItem("ppntscore");
+  bestscore = parseFloat(localStorage.getItem("bestscore")).toPrecision(3);
+  rndscore = parseFloat(localStorage.getItem("rndscore")).toPrecision(3);
+  
+  return "Your score was "+myscore+"</br>How did you do? </br>The average score from choosing the best option every time is around "+bestscore+", but could be higher or lower depending on the outcome of the random gambles.</br> Anything getting close to that is great, it's hard to choose the best every time with limited information.</br>The average score following a random strategy is "+rndscore+", hopefully you were able to beat that.</br> Hope you had some fun with the study, thanks again for participating!"
+  }
+  document.getElementById("completioncodespan").innerHTML=(getCode());
+  document.getElementById("performancemessage").innerHTML = getPerformance();
 </script>
   </body>
 </html>
