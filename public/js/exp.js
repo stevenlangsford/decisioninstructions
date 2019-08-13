@@ -1,106 +1,80 @@
-//Generic sequence-of-trials
-//If that's all you want, all you need to edit is the makeTrial object and the responseListener. Give maketrial an appropriate constructor that accept the key trial properties, a drawMe function, and something that will hit responseListener.
-//then put a list of trial-property-setter entries in 'stim' and you're golden.
 
-var trials = [];
-var trialindex = 0;
-var scoretracker = "0"; //using toPrecision to round everything, means this is stored as a string. Next time * 100 / 100 to round?
-function choose(aresponse){//global so it'll be just sitting here available for the trial objects to use. So, it must accept whatever they're passing.
-    console.log("responseListener heard: "+aresponse); //diag
-    trials[trialindex].response = aresponse;
-    trials[trialindex].responseTime= Date.now();
-    trials[trialindex].score_when_choosing = scoretracker;
 
-    var gamble_pays = Math.random()<trials[trialindex].probfeatures[aresponse];
-    trials[trialindex].gamble_pays = gamble_pays;
-    if(gamble_pays){
-	scoretracker = (parseFloat(scoretracker) + parseFloat(trials[trialindex].payfeatures[aresponse])).toPrecision(3);
-	alert("This gamble paid out.\nYour score has increased by "+trials[trialindex].payfeatures[aresponse])
-    }else{
-	alert("This gamble did not pay out.")
+//drawing params
+var buttonheight = 100;
+var buttonwidth = 100;
+var digitheight = 100;
+var digitwidth = 100/4;
+var circle_size = 280;
+var circle_x = 0;
+var circle_y = 0;
+var feature_precision = 3; //same for prob and pay features (split ?) ref'd at get_
+
+//study params: n stim, dists of each feature, TODO obs budget?
+
+var n_trials = 5;
+
+function get_prob(){
+    return (Math.random()).toPrecision(feature_precision);
+}
+
+function get_payoff(){
+    function rnorm() { //standard normal via Box-Muller
+	var u = 0, v = 0;
+	while(u === 0) u = Math.random(); //Converting [0,1) to (0,1)
+	while(v === 0) v = Math.random();
+	return Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
     }
-
-    // $.post('/response',{myresponse:JSON.stringify(trials[trialindex])},function(success){
-    // 	console.log(success);//For now server returns the string "success" for success, otherwise error message.
-    // });
     
-    //can put this inside the success callback, if the next trial depends on some server-side info.
-    trialindex++; //increment index here at the last possible minute before drawing the next trial, so trials[trialindex] always refers to the current trial.
-    nextTrial();
+    return (rnorm()*7+20).toPrecision(feature_precision);
 }
 
-function reveal(targfeature, targoption){
-    if(trials[trialindex].obsbudget == 0){
-	alert("You are out of observations. Please choose an option to continue.")
-	return;
-    }
-    if(targfeature == "p"){
-	trials[trialindex].probvisible[targoption] = true;
-    }
-    if(targfeature == "v"){
-	trials[trialindex].payvisible[targoption] = true;
-    }
 
-    trials[trialindex].obsbudget = trials[trialindex].obsbudget - 1;
-    trials[trialindex].drawMe("uberdiv");
-}
+//stim setup:
+var feature_lookup = {};
 
-function nextTrial(){
-    if(trialindex<trials.length){
-	trials[trialindex].drawMe("uberdiv");
-    }else{
-	localStorage.setItem("ppntscore",scoretracker)
-	$.post("/finish",function(data){window.location.replace(data)});
-    }
-}
-
-// a trial object should have a drawMe function and a bunch of attributes.
-//the data-getting process in 'dashboard.ejs' & getData routes creates a csv with a col for every attribute, using 'Object.keys' to list all the properties of the object. Assumes a pattern where everything interesting is saved to the trial object, then that is JSONified and saved as a response.
-//Note functions are dropped by JSON.
-//Also note this means you have to be consistent with the things that are added to each trial before they are saved, maybe init with NA values in the constructor.
-function makeTrial(obsbudget, p1, p2, p3, v1, v2, v3){
+function makeTrial(idstring, obsbudget, p1, p2, p3, v1, v2, v3){
     this.ppntID = localStorage.getItem("ppntID");
     this.obsbudget = obsbudget; //tracker, decrements.
     this.obsbudget_initial = obsbudget; //recorder, fixed.
     this.probfeatures = [p1, p2, p3];
     this.payfeatures = [v1, v2, v3];
-    this.probvisible = [false, false, false];
-    this.payvisible = [false, false, false];
-    this.obstimes = [];
     this.drawTime = -1;
 
-    this.optionDrawstring = function(option_index){
-	return "<div class='optiondiv'>" +
-	    "<h5>Option "+(option_index + 1)+"</h5>" +
-	    (this.probvisible[option_index] ? "<p>Probability: "+this.probfeatures[option_index]+"</p>" : "<button class='revealbutton' onclick='reveal(\"p\","+option_index+")'>Show probability</button>") +
-	    (this.payvisible[option_index] ? "<p>Payout: "+this.payfeatures[option_index]+"</p>" : "<button class='revealbutton' onclick='reveal(\"v\","+option_index+")'>Show payout</button>") +
-	    "<hr>" + 
-	    "<button class='choicebutton' onclick='choose("+option_index+")' "+(this.obsbudget > 0 ? "disabled=true" : "")+">Choose this option</button>" +
-	    "</div>"
-    }
+    feature_lookup[idstring+"prob1"] = p1;
+    feature_lookup[idstring+"prob2"] = p2;
+    feature_lookup[idstring+"prob3"] = p3;
+    feature_lookup[idstring+"pay1"] = v1;
+    feature_lookup[idstring+"pay2"] = v2;
+    feature_lookup[idstring+"pay3"] = v3;
     
-    this.drawMe = function(targdiv){
-	if(this.drawTime == -1) {
-	    this.drawTime = Date.now();
-	}else{
-	    this.obstimes.push(Date.now());
-	}
-	var mask = "NA"
-	var infodisplay =  "<div id='infodisplay'>" +
-	    "<h3 id='prompttext'>You can reveal "+this.obsbudget+" more feature"+(this.obsbudget==1 ? "" : "s")+" before you choose</h3>"+
-	    this.optionDrawstring(0) +
-	    this.optionDrawstring(1) +
-	    this.optionDrawstring(2) +
-	    "<div id='scoremessage'>Score so far: "+scoretracker+"</div>"
-	    "</div>"
-	
-	document.getElementById(targdiv).innerHTML= infodisplay;
+    this.drawMe = function(){	
+	//in polar cords, position1 is (d,0)
+	//position 2 is (d, 2pi/3)
+	//position 3 is (d, 4pi/3)
 
+	// so pos 1 in rect cords is: d*cos(0),d*sin(0) = (d,0)
+	// pos 2 is d*cos(2pi/3), d*sin(2pi/3)
+	//pos 3 is d*cos(4pi/3), d*sin(4pi/3)
+
+	document.getElementById("uberdiv").innerHTML += trial_string(idstring+"prob1",idstring+"pay1",
+								     circle_size+circle_y - 130,//fudge why?
+								     0+circle_x,
+								     true);
+	document.getElementById("uberdiv").innerHTML += trial_string(idstring+"prob2",idstring+"pay2",
+								     circle_size*Math.cos(2*Math.PI/3)+circle_y,
+								     circle_size*Math.sin(2*Math.PI/3)+circle_x,
+								     false);
+	document.getElementById("uberdiv").innerHTML += trial_string(idstring+"prob3",idstring+"pay3",
+								     circle_size*Math.cos(4*Math.PI/3)+circle_y,
+								     circle_size*Math.sin(4*Math.PI/3)+circle_x,
+								     false);
     }
 }
 
 
 
+//helper fns
 function shuffle(a) { //via https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array
     var j, x, i;
     for (i = a.length - 1; i > 0; i--) {
@@ -112,39 +86,82 @@ function shuffle(a) { //via https://stackoverflow.com/questions/6274339/how-can-
     return a;
 }
 
-function rnorm() { //standard normal via Box-Muller
-    var u = 0, v = 0;
-    while(u === 0) u = Math.random(); //Converting [0,1) to (0,1)
-    while(v === 0) v = Math.random();
-    return Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
-}
-//****************************************************************************************************
-//Stimuli
-var possible_obsbudgets = [1,2,3,4,5,6];
-var sigfigs = 3;
-function rnd_payoff(){
-    return rnorm()*7+20;
-}
-function rnd_prob(){
-    return Math.random();
+function click_feature(featureid){
+    //document.getElementById(featureid).style.display = "none";
+    var me = document.getElementById(featureid);
+    me.parentNode.removeChild(me);
+    
+    var mynumber = ""+feature_lookup[featureid];
+
+    for(var i=0;i<mynumber.length; i++){
+	var mychar = mynumber.charAt(i) == "." ? "pt" : mynumber.charAt(i);
+	var digit_imgstring = "<img class='trial' src='digits/"+mychar+".png' "+
+	    "height='"+digitheight+"px' "+
+	    "width='"+digitwidth+"px' "+
+	    "style=\"position:fixed;"+
+	    "top:"+(me.style.top)+";"+
+	    "left:"+(parseFloat(me.style.left, 10)+digitwidth*i)+"px;"+
+	    "\">";
+	document.getElementById("uberdiv").innerHTML+=digit_imgstring;
+    }
+
 }
 
-var hm_trials = 5;
-for(i = 0; i < hm_trials; i++){
-    trials.push(new makeTrial(shuffle(possible_obsbudgets)[1], rnd_prob().toPrecision(sigfigs), rnd_prob().toPrecision(sigfigs), rnd_prob().toPrecision(sigfigs), rnd_payoff().toPrecision(sigfigs), rnd_payoff().toPrecision(sigfigs), rnd_payoff().toPrecision(sigfigs)))
+function click_choice(choiceid){
+    console.log(choiceid);
 }
 
-
-var bestscore = 0; //used for feedback in outro.
-var rndscore = 0;
-for(i=0;i<hm_trials;i++){
-    var ev1 = trials[i].probfeatures[0] * trials[i].payfeatures[0];
-    var ev2 = trials[i].probfeatures[1] * trials[i].payfeatures[1];
-    var ev3 = trials[i].probfeatures[2] * trials[i].payfeatures[2];
-    bestscore += Math.max(ev1,ev2,ev3);//superhuman, because it doesn't know the obsbudget! Beats actual opt. But, it's easy to calculate automatically.
-    rndscore += shuffle([ev1,ev2,ev3])[1] //rnd choice NOT sensible choice after rnd observations. So a very low bar, most ppnts get to beat it.
+function cleartrial(){ //assumes all DOM elements associated with a trial have class 'trial'
+    var paras = document.getElementsByClassName('trial');
+    while(paras[0]){
+	paras[0].parentNode.removeChild(paras[0]);
+    }
 }
-localStorage.setItem("bestscore",bestscore)
-localStorage.setItem("rndscore",rndscore)
 
-nextTrial();
+function button_string(id, img, imghover, imgclick, clickfn, top, left, height, width){
+    var viewportwidth = window.innerWidth; //used to center element. Viewport size might change! You'll get the one that was current at call time.
+    var viewportheight = window.innerHeight;
+    
+    var drawstring = "<img class = 'trial' id='"+id+"' src='"+img+"' height=\""+height+"\" width=\""+width+"\""+
+	"onmouseenter=\"this.src='"+imghover+"'\""+
+	"onmouseleave=\"this.src='"+img+"'\""+
+	"onmousedown=\"this.src='"+imgclick+"'\""+
+	"onmouseup=\"this.src='"+imghover+"'\""+
+	"onclick=\""+clickfn+"('"+id+"')\""+
+	"style=\"position:fixed;"+
+	"top:"+(viewportheight/2+top-height/2)+"px;"+
+	"left:"+(viewportwidth/2+left-width/2)+"px;"+
+	"\">";
+        return drawstring;
+}
+
+function trial_string(probid, payid, top, left, buttonbelow){
+    var viewportwidth = window.innerWidth; //used to center element. Viewport size might change! You'll get the one that was current at call time.
+    var viewportheight = window.innerHeight;
+
+    var mychoosebutton = button_string("choose"+probid+payid, "buttons/choosebutton.png","buttons/choosebutton_hilight.png","buttons/choosebutton_pulled.png","click_choice",
+				       (buttonbelow ? top+buttonheight*.6 : top-buttonheight*.9),
+				       left+buttonwidth*.1,
+				       buttonheight*.8,
+				       buttonwidth*3);
+    var drawstring = ""+
+	mychoosebutton +
+	button_string(probid, "buttons/dice_noshadow.png","buttons/dice_shadow.png","buttons/dice_highlight.png","click_feature",top,left-buttonwidth/1.2,buttonheight,buttonwidth)+
+	button_string(payid, "buttons/payout_noshadow.png","buttons/payout_shadow.png","buttons/payout_highlight.png","click_feature",top,left+buttonwidth/1.2,buttonheight,buttonwidth);
+
+    return drawstring;
+}
+
+//MAIN
+var trials = [];
+for(var atrial = 0; atrial < n_trials; atrial++){
+    trials.push( new makeTrial("trial"+atrial+"_", 6, get_prob(), get_prob(), get_prob(), get_payoff(), get_payoff(), get_payoff()))
+}
+
+trials[0].drawMe()
+
+
+// var prob_button = button_string("prob1","dice_noshadow.png","dice_shadow.png","dice_highlight.png","click_feature",0,0,100,100)
+// var pay_button = button_string("pay1", "payout_noshadow.png","payout_shadow.png","payout_highlight.png","click_feature",0,-200,100,100)
+// document.getElementById("uberdiv").innerHTML += prob_button;
+// document.getElementById("uberdiv").innerHTML += pay_button;
