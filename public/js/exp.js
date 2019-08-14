@@ -1,4 +1,13 @@
-
+function shuffle(a) { //via https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array
+    var j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+    }
+    return a;
+}
 
 //drawing params
 var buttonheight = 100;
@@ -13,6 +22,8 @@ var feature_precision = 3; //same for prob and pay features (split ?) ref'd at g
 //study params: n stim, dists of each feature, TODO obs budget?
 
 var n_trials = 5;
+var trialindex = 0; //refs the current trial.
+var scorecounter = 0;
 
 function get_prob(){
     return (Math.random()).toPrecision(feature_precision);
@@ -29,7 +40,9 @@ function get_payoff(){
     return (rnorm()*7+20).toPrecision(feature_precision);
 }
 
-
+function get_obsbudget(){
+    return shuffle([1,2,3,4,5,6])[0];
+}
 //stim setup:
 var feature_lookup = {};
 
@@ -69,25 +82,41 @@ function makeTrial(idstring, obsbudget, p1, p2, p3, v1, v2, v3){
 								     circle_size*Math.cos(4*Math.PI/3)+circle_y,
 								     circle_size*Math.sin(4*Math.PI/3)+circle_x,
 								     false);
+
+	document.write("<div class = 'trial' id='infodiv'"+
+		       "style=\"position:fixed; text-align:center"+
+		       // "top:"+(window.innerHeight/2-100)+"px;"+
+		       // "left:"+(window.innerWidth/2-100)+"px;"+
+		       "\">"+get_current_info_message()+"</div>");
+
+	var info_width = document.getElementById('infodiv').offsetWidth;
+	var info_height = document.getElementById('infodiv').offsetHeight;
+
+	document.getElementById("infodiv").style.top = (window.innerHeight/2-info_height/2-10)+"px";
+	document.getElementById("infodiv").style.left = (window.innerWidth/2-info_width/2)+"px";
+	
     }
 }
 
 
 
 //helper fns
-function shuffle(a) { //via https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array
-    var j, x, i;
-    for (i = a.length - 1; i > 0; i--) {
-        j = Math.floor(Math.random() * (i + 1));
-        x = a[i];
-        a[i] = a[j];
-        a[j] = x;
-    }
-    return a;
+function get_current_info_message(){
+    return "<p>You have "+trials[trialindex].obsbudget+" observation"+(trials[trialindex].obsbudget!=1 ? "s" : "")+" left this trial</p>"+
+	"<p>Total score so far: "+scorecounter+"</p>";
 }
 
 function click_feature(featureid){
     //document.getElementById(featureid).style.display = "none";
+    if(trials[trialindex].obsbudget==0){
+	alert("You're out of observations.\nPlease choose an option to continue.")
+	return;
+    }
+
+    trials[trialindex].obsbudget--;
+
+    document.getElementById("infodiv").innerHTML= get_current_info_message();
+	
     var me = document.getElementById(featureid);
     me.parentNode.removeChild(me);
     
@@ -144,6 +173,8 @@ function trial_string(probid, payid, top, left, buttonbelow){
 				       left+buttonwidth*.1,
 				       buttonheight*.8,
 				       buttonwidth*3);
+    
+    
     var drawstring = ""+
 	mychoosebutton +
 	button_string(probid, "buttons/dice_noshadow.png","buttons/dice_shadow.png","buttons/dice_highlight.png","click_feature",top,left-buttonwidth/1.2,buttonheight,buttonwidth)+
@@ -155,7 +186,7 @@ function trial_string(probid, payid, top, left, buttonbelow){
 //MAIN
 var trials = [];
 for(var atrial = 0; atrial < n_trials; atrial++){
-    trials.push( new makeTrial("trial"+atrial+"_", 6, get_prob(), get_prob(), get_prob(), get_payoff(), get_payoff(), get_payoff()))
+    trials.push( new makeTrial("trial"+atrial+"_", get_obsbudget(), get_prob(), get_prob(), get_prob(), get_payoff(), get_payoff(), get_payoff()))
 }
 
 trials[0].drawMe()
