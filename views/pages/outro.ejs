@@ -16,10 +16,16 @@
       <h1>Thank you</h1>
       <p>You're done!</p>
       <p>Your completion code is:</br> <span id='completioncodespan'></span></p>
-      <div id='performancemessage'></div>    
+      <h3>How did you do?</h3>
+      <canvas id="performancecanvas" width=630 height=300 style='border:1px solid black'></canvas>
+      <div id='performancemessage'></div>
 
     </div>
-<script>
+    <script>
+      var myscore  = parseFloat(localStorage.getItem("ppntscore")).toPrecision(3);
+      var bestscore = parseFloat(localStorage.getItem("bestscore")).toPrecision(3);
+      var rndscore = parseFloat(localStorage.getItem("rndscore")).toPrecision(3);
+
   var symbols = ["A","B","C","D","F","G","H","J","K","L","M","N","P","Q","R","S","T","V","W","X","Y","Z","1","2","3","4","5","6","7","8","9","1","2","3","4","5","6","7","8","9"];
   function getSymbol(){
   return symbols[Math.floor(Math.random()*symbols.length)]
@@ -28,14 +34,47 @@
   return "SD"+getSymbol()+getSymbol()+getSymbol()+"LL"+getSymbol()+getSymbol()+getSymbol()+getSymbol()+"4";//some fixed vals so bad codes pop out. Zero defence against malice but sometimes folks make mistakes or write messages in the submission box.
   }
   function getPerformance(){
-  myscore  = localStorage.getItem("ppntscore");
-  bestscore = parseFloat(localStorage.getItem("bestscore")).toPrecision(3);
-  rndscore = parseFloat(localStorage.getItem("rndscore")).toPrecision(3);
   
-  return "Your score was "+myscore+"</br>How did you do? </br>The average score from choosing the best option every time is around "+bestscore+", but could be higher or lower depending on the outcome of the random gambles.</br> Anything getting close to that is great, it's hard to choose the best every time with limited information.</br>The average score following a random strategy is "+rndscore+", hopefully you were able to beat that.</br> Hope you had some fun with the study, thanks again for participating!"
+  return "<span style='color:red'>Superbot got "+bestscore+"</span>&nbsp<span style='color:blue'>Your score was "+myscore+"</span>&nbsp<span style='color:green'> Random-guessing got: "+rndscore+"</span></br> Hope you had some fun with the study, thanks again for participating!"
   }
+  <!-- draw a feedback bar chart: -->
+  function drawChart(canvas_id){
+  const canvas = document.getElementById(canvas_id);
+  const ctx = canvas.getContext('2d');
+
+  const canvaswidth = canvas.width;
+  const canvasheight = canvas.height;
+
+  var myscore_percent = (myscore/bestscore) * canvasheight;
+  var bestscore_percent = 0.9 * canvasheight;
+  var rndscore_percent = (rndscore/bestscore) * canvasheight;
+
+  var xgap = 90;
+  
+  function drawBar(ctx, y_value, x_value, color){
+
+  var upperLeftCornerX = x_value;
+  var upperLeftCornerY = canvasheight-y_value;
+  var width = xgap;
+  var height = y_value;
+
+  ctx.save();
+    ctx.fillStyle=color;
+    ctx.fillRect(upperLeftCornerX,upperLeftCornerY,width,height);
+    ctx.restore();
+  }
+
+
+  drawBar(ctx, bestscore_percent, xgap, "red");
+  drawBar(ctx, myscore_percent, xgap*3, "blue");
+  drawBar(ctx, rndscore_percent, xgap*5, "green");
+  
+  
+  }<!-- end draw chart -->
+  
   document.getElementById("completioncodespan").innerHTML=(getCode());
   document.getElementById("performancemessage").innerHTML = getPerformance();
+  drawChart("performancecanvas");
 </script>
   </body>
 </html>

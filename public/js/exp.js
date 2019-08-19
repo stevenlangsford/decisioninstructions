@@ -72,6 +72,36 @@ function makeTrial(idstring, obsbudget, p1, p2, p3, v1, v2, v3){
 	// pos 2 is d*cos(2pi/3), d*sin(2pi/3)
 	//pos 3 is d*cos(4pi/3), d*sin(4pi/3)
 	document.getElementById("uberdiv").innerHTML ="";
+	var bg_center_x = window.innerWidth/2-buttonwidth*2.1;
+	var bg_center_y = window.innerHeight/2-buttonheight*.6;
+	
+	var background_imgstring =  "<img class='trial' src='buttons/texturecloud.png' "+
+	    "height='"+(buttonheight+10)+"px' "+
+	    "width='"+(buttonwidth*4)+"px' "+
+	    "style=\"position:fixed;"+
+	    "top:"+(bg_center_y+circle_size+circle_y - 130)+"px;"+
+	    "left:"+(bg_center_x+circle_x)+"px;"+
+	    "\">"+
+	    "<img class='trial' src='buttons/texturecloud.png' "+
+	    "height='"+(buttonheight+10)+"px' "+
+	    "width='"+(buttonwidth*4)+"px' "+
+	    "style=\"position:fixed;"+
+	    "top:"+(bg_center_y+circle_size*Math.cos(2*Math.PI/3)+circle_y)+"px;"+
+	    "left:"+(bg_center_x+circle_size*Math.sin(2*Math.PI/3)+circle_x)+"px;"+
+	    "\">"+
+	    "<img class='trial' src='buttons/texturecloud.png' "+
+	    "height='"+(buttonheight+10)+"px' "+
+	    "width='"+(buttonwidth*4)+"px' "+
+	    "style=\"position:fixed;"+
+	    "top:"+(bg_center_y+circle_size*Math.cos(4*Math.PI/3)+circle_y)+"px;"+
+	    "left:"+(bg_center_x+circle_size*Math.sin(4*Math.PI/3)+circle_x)+"px;"+
+	    "\">"
+
+				       // 	       left+buttonwidth*.1,
+				       // buttonheight*.8,
+				       // buttonwidth*3);
+	document.getElementById("uberdiv").innerHTML += background_imgstring;
+	
 	document.getElementById("uberdiv").innerHTML += option_string(idstring+"prob1",idstring+"pay1",
 								     circle_size+circle_y - 130,//fudge why?
 								     0+circle_x,
@@ -86,17 +116,17 @@ function makeTrial(idstring, obsbudget, p1, p2, p3, v1, v2, v3){
 								     false);
 
 	document.getElementById("uberdiv").innerHTML += ("<div class = 'trial' id='infodiv'"+
-		       "style=\"position:fixed; text-align:center"+
-		       // "top:"+(window.innerHeight/2-100)+"px;"+
-		       // "left:"+(window.innerWidth/2-100)+"px;"+
+							 "style=\"position:fixed; text-align:center"+
+							 // "top:"+(window.innerHeight/2-100)+"px;"+
+							 // "left:"+(window.innerWidth/2-100)+"px;"+
 							 "\">"+get_current_info_message()+"</div>");
-
-		document.getElementById("uberdiv").innerHTML += ("<div class = 'trial' id='progressfooter'"+
-								 "style=\"position:fixed;"+
-								 "bottom:0;"+
-								 "right:0;"+
-								 "width:200px;"+
-								 "\">Trial "+(trialindex+1)+" of "+n_trials+"</div>");
+	
+	document.getElementById("uberdiv").innerHTML += ("<div class = 'trial' id='progressfooter'"+
+							 "style=\"position:fixed;"+
+							 "bottom:0;"+
+							 "right:0;"+
+							 "width:200px;"+
+							 "\">Trial "+(trialindex+1)+" of "+n_trials+"</div>");
 	
 
 	var info_width = document.getElementById('infodiv').offsetWidth;
