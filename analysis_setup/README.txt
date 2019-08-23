@@ -1,0 +1,10 @@
+Go to setup_params.R and don't look at anything else (if you want to keep your sanity/self-respect).
+
+goldenline.R populates a hash table called "opt_only" with a bunch of "info-state" objects representing the states that are reachable if you're making optimal observations. It has infostate_constructor and best_action(infostate, n_obs) methods which are useful, and a ton of supporting crap which is not. The infostate arg here (and elsewhere) is a string, if you have an infostate created with the constructor (probably init, also created here in goldenline, the 'nothing observed' state) and you want to pass it to some function that calls for an infostate as an arg, you don't pass the whole thing, you pass the $mystringid. This is used as a key to a hash table full of infostates, passing the keys avoids duplicating infostates all over the place.
+
+get_strategy.R gives an English-language description of an optimal strategy in instruction_list. Ignore all the other junk it creates.
+The description may or may not be simple, this could use some work. But it should definitely be optimal (barring bugs). Instruction_list will have one more entries than the number of observations available, the last entry is the choose action. Currently each entry is a potentially-three-part-block of production rules: if [condition] then [action]. Actions are 'v' for observe payoff, 'p' for observe probability, and then two feature-values identifying which option you should take the action on. If there's a "THEN" block it means "If you don't find a match to any of the rules in the first block, consider these", there may also be an ALSO block, for if you don't find a match there either.
+
+eval_strategy.R lets you see how the different strategies perform.
+As a first pass, you probably just want to inspect performance.plot.
+If you want to add another strategy to the ones already there, you need to represent it as an "action choosing function" that you can pass to value_strategy. Follow the existing pattern found in #MAIN
