@@ -1,0 +1,34 @@
+##assumes setup_params ran, ie all these exist:
+
+##Cond 1
+
+## prob_levels <- c("lowprob", "midprob", "highprob")
+## problevel_prob <- c(1/3, 1/3, 1/3)
+## problevel_value <- c(0.25, 0.5, 0.75)
+
+## payoff_levels <- c("lowpay", "midpay", "highpay")
+## paylevel_prob <- c(.25, .5, .25)
+## paylevel_value <- c(15, 20, 25)
+
+##Cond 2
+## prob_levels <- c("lowprob", "midprob", "highprob")
+## problevel_prob <- c(.2, .6, .2)
+## problevel_value <- c(.1, .5, .9)
+
+## payoff_levels <- c("lowpay", "midpay", "highpay")
+## paylevel_prob <- c(1/3, 1/3, 1/3)
+## paylevel_value <- c(5, 50, 95)
+
+
+sim.n <- 1000000
+stim.n <- 30
+nlevels <- 3
+
+probs_raw <- runif(sim.n, 0, 1)
+pay_raw <- abs(rnorm(sim.n, 100, 150))
+
+problevel_prob <- rep(1 / length(problevel_prob), length(problevel_prob))
+problevel_value <- quantile(probs_raw, c(0.25, 0.5, 0.75))
+
+paylevel_prob <- rep(1 / length(paylevel_prob), length(paylevel_prob))
+paylevel_value <- quantile(pay_raw, c(0.25, 0.5, 0.75))

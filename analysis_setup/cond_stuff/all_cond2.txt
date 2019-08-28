@@ -1,0 +1,199 @@
+$cond2obs2.RData
+$cond2obs2.RData[[1]]
+[1] "take action | v NA NA"
+
+$cond2obs2.RData[[2]]
+[1] "if more than 0 of highpay then take action | p NA highpay"
+[2] "if exactly 0 of highpay then take action | v NA NA"       
+
+$cond2obs2.RData[[3]]
+[1] "if more than 0 of highprob then take action | choose: highprob highpay"
+[2] "if max prob is lowprob then take action | choose: NA NA"               
+[3] "if more than 0 of midprob then take action | choose: midprob highpay"  
+[4] "if more than 0 of NA_highpay then take action | choose: NA highpay"    
+[5] "if max payoff is midpay then take action | choose: NA midpay"          
+
+
+$cond2obs3.RData
+$cond2obs3.RData[[1]]
+[1] "take action | v NA NA"
+
+$cond2obs3.RData[[2]]
+[1] "if more than 0 of highpay then take action | p NA NA"
+[2] "if exactly 0 of highpay then take action | v NA NA"  
+
+$cond2obs3.RData[[3]]
+[1] "if more than 0 of highprob then take action | v highprob NA"
+[2] "if max prob is midprob then take action | p NA highpay"     
+[3] "if more than 1 of lowpay then take action | p NA lowpay"    
+[4] "if max payoff is midpay then take action | v NA NA"         
+
+$cond2obs3.RData[[4]]
+[1] "if more than 0 of highprob_highpay then take action | choose: highprob highpay"
+[2] "if min prob is highprob then take action | choose: NA highpay"                 
+[3] "if min payoff is highpay then take action | choose: midprob NA OR NA NA"       
+[4] "if max prob is lowprob then take action | choose: NA midpay"                   
+[5] "if more than 0 of midprob_highpay then take action | choose: midprob highpay"  
+[6] "THEN"                                                                          
+[7] "if more than 0 of NA_ then take action | choose: NA NA"                        
+
+
+$cond2obs4.RData
+$cond2obs4.RData[[1]]
+[1] "take action | v NA NA"
+
+$cond2obs4.RData[[2]]
+[1] "if exactly 0 of lowpay then take action | v NA NA"  
+[2] "if more than 0 of lowpay then take action | p NA NA"
+
+$cond2obs4.RData[[3]]
+[1] "if more than 0 of highprob then take action | v highprob NA"
+[2] "if more than 0 of lowprob then take action | v lowprob NA"  
+[3] "if max prob is midprob then take action | v NA NA"          
+[4] "if more than 1 of highpay then take action | p NA highpay"  
+[5] "THEN"                                                       
+[6] "if more than 0 of NA_ then take action | p NA NA"           
+
+$cond2obs4.RData[[4]]
+ [1] "if more than 0 of highprob_highpay then take action | choose: highprob highpay"
+ [2] "if more than 0 of highprob_NA then take action | v highprob NA"                
+ [3] "if max payoff is lowpay then take action | p NA lowpay"                        
+ [4] "if min prob is midprob then take action | v midprob NA"                        
+ [5] "if all probs are NA then take action | p NA midpay"                            
+ [6] "THEN"                                                                          
+ [7] "if max prob is highprob then take action | v NA NA"                            
+ [8] "if max prob is midprob then take action | p NA highpay"                        
+ [9] "if more than 0 of highpay then take action | choose: NA highpay"               
+[10] "if more than 0 of lowprob then take action | choose: NA midpay"                
+
+$cond2obs4.RData[[5]]
+ [1] "if more than 0 of highprob_highpay then take action | choose: highprob highpay"         
+ [2] "if more than 2 of lowpay then take action | choose: highprob lowpay"                    
+ [3] "if more than 0 of midprob_midpay then take action | choose: midprob midpay OR NA midpay"
+ [4] "THEN"                                                                                   
+ [5] "if more than 0 of NA_highpay then take action | choose: NA highpay"                     
+ [6] "if more than 0 of highprob_midpay then take action | choose: highprob midpay"           
+ [7] "if more than 0 of midprob_highpay then take action | choose: midprob highpay"           
+ [8] "if max payoff is midpay then take action | choose: lowprob midpay"                      
+ [9] "ALSO"                                                                                   
+[10] "if highprob_lowpay:lowprob_lowpay:NA_NA take action choose: NA NA"                      
+[11] "if lowprob_highpay:lowprob_highpay:NA_NA take action choose: NA NA"                     
+[12] "if lowprob_lowpay:lowprob_lowpay:NA_NA take action choose: NA NA"                       
+[13] "if lowprob_lowpay:midprob_lowpay:NA_NA take action choose: NA NA"                       
+[14] "if highprob_lowpay:midprob_NA:NA_lowpay take action choose: midprob NA"                 
+[15] "if lowprob_highpay:midprob_NA:NA_lowpay take action choose: midprob NA"                 
+[16] "if lowprob_lowpay:midprob_NA:NA_lowpay take action choose: midprob NA"                  
+[17] "if midprob_lowpay:midprob_NA:NA_lowpay take action choose: midprob NA"                  
+[18] "if highprob_lowpay:NA_lowpay:NA_midpay take action choose: NA midpay"                   
+[19] "if lowprob_highpay:lowprob_NA:NA_midpay take action choose: NA midpay"                  
+[20] "if lowprob_highpay:midprob_NA:NA_midpay take action choose: NA midpay"                  
+[21] "if lowprob_highpay:NA_lowpay:NA_midpay take action choose: NA midpay"                   
+[22] "if lowprob_highpay:NA_midpay:NA_midpay take action choose: NA midpay"                   
+[23] "if lowprob_midpay:NA_lowpay:NA_midpay take action choose: NA midpay"                    
+[24] "if lowprob_midpay:NA_midpay:NA_midpay take action choose: NA midpay"                    
+[25] "if midprob_lowpay:NA_lowpay:NA_midpay take action choose: NA midpay"                    
+[26] "if lowprob_highpay:NA_lowpay:NA_lowpay take action choose: lowprob highpay"             
+
+
+$cond2obs5.RData
+$cond2obs5.RData[[1]]
+[1] "take action | v NA NA"
+
+$cond2obs5.RData[[2]]
+[1] "if exactly 0 of midpay then take action | p NA NA"  
+[2] "if more than 0 of midpay then take action | v NA NA"
+
+$cond2obs5.RData[[3]]
+[1] "if max prob is highprob then take action | p NA NA"    
+[2] "if max prob is midprob then take action | p NA highpay"
+[3] "if all probs are NA then take action | p NA midpay"    
+
+$cond2obs5.RData[[4]]
+[1] "if more than 0 of highprob_highpay then take action | choose: highprob highpay"
+[2] "if more than 1 of highprob then take action | v highprob NA"                   
+[3] "if min payoff is highpay then take action | p NA highpay"                      
+[4] "if min prob is midprob then take action | v midprob NA"                        
+[5] "if max prob is midprob then take action | v NA NA"                             
+[6] "if max prob is lowprob then take action | p NA lowpay"                         
+[7] "THEN"                                                                          
+[8] "if more than 0 of NA_NA then take action | p NA NA"                            
+[9] "if more than 0 of lowprob then take action | v lowprob NA"                     
+
+$cond2obs5.RData[[5]]
+ [1] "if more than 0 of highprob_highpay then take action | choose: highprob highpay"
+ [2] "if max payoff is lowpay then take action | p NA lowpay"                        
+ [3] "if more than 0 of NA_NA then take action | v NA NA"                            
+ [4] "THEN"                                                                          
+ [5] "if more than 0 of highprob_NA then take action | v highprob NA"                
+ [6] "if more than 0 of NA_highpay then take action | p NA highpay"                  
+ [7] "if more than 1 of NA_ then take action | p NA midpay"                          
+ [8] "if min payoff is midpay then take action | choose: NA midpay"                  
+ [9] "if more than 0 of midprob_highpay then take action | choose: midprob highpay"  
+[10] "if max prob is midprob then take action | choose: midprob midpay"              
+[11] "ALSO"                                                                          
+[12] "if highprob_midpay:lowprob_NA:NA_lowpay take action choose: highprob midpay"   
+[13] "if highprob_midpay:lowprob_NA:NA_midpay take action choose: highprob midpay"   
+[14] "if highprob_midpay:midprob_NA:NA_lowpay take action v midprob NA"              
+[15] "if highprob_midpay:midprob_NA:NA_midpay take action v midprob NA"              
+[16] "if lowprob_highpay:lowprob_NA:midprob_NA take action v midprob NA"             
+[17] "if lowprob_highpay:midprob_NA:NA_lowpay take action v midprob NA"              
+[18] "if lowprob_highpay:midprob_NA:NA_midpay take action v midprob NA"              
+[19] "if lowprob_midpay:midprob_NA:NA_lowpay take action v midprob NA"               
+[20] "if lowprob_midpay:midprob_NA:NA_midpay take action v midprob NA"               
+[21] "if midprob_midpay:midprob_NA:NA_lowpay take action v midprob NA"               
+[22] "if lowprob_highpay:lowprob_NA:lowprob_NA take action choose: lowprob highpay"  
+[23] "if lowprob_highpay:lowprob_NA:NA_lowpay take action choose: lowprob highpay"   
+[24] "if lowprob_lowpay:lowprob_NA:NA_lowpay take action v lowprob NA"               
+[25] "if lowprob_midpay:lowprob_NA:NA_lowpay take action v lowprob NA"               
+
+$cond2obs5.RData[[6]]
+ [1] "if more than 0 of highprob_highpay then take action | choose: highprob highpay"   
+ [2] "if more than 0 of highprob_NA then take action | choose: highprob NA"             
+ [3] "if max payoff is midpay then take action | choose: lowprob midpay"                
+ [4] "if max prob is midprob then take action | choose: midprob midpay OR NA midpay"    
+ [5] "if more than 2 of lowpay then take action | choose: NA lowpay"                    
+ [6] "THEN"                                                                             
+ [7] "if more than 0 of NA_highpay then take action | choose: NA highpay"               
+ [8] "if more than 0 of midprob_highpay then take action | choose: midprob highpay"     
+ [9] "ALSO"                                                                             
+[10] "if highprob_lowpay:highprob_midpay:NA_lowpay take action choose: highprob midpay" 
+[11] "if highprob_lowpay:highprob_midpay:NA_midpay take action choose: highprob midpay" 
+[12] "if highprob_midpay:highprob_midpay:NA_lowpay take action choose: highprob midpay" 
+[13] "if highprob_midpay:highprob_midpay:NA_midpay take action choose: highprob midpay" 
+[14] "if highprob_midpay:lowprob_highpay:lowprob_NA take action choose: highprob midpay"
+[15] "if highprob_midpay:lowprob_highpay:midprob_NA take action choose: highprob midpay"
+[16] "if highprob_midpay:lowprob_highpay:NA_lowpay take action choose: highprob midpay" 
+[17] "if highprob_midpay:lowprob_highpay:NA_midpay take action choose: highprob midpay" 
+[18] "if highprob_midpay:lowprob_midpay:NA_lowpay take action choose: highprob midpay"  
+[19] "if highprob_midpay:lowprob_midpay:NA_midpay take action choose: highprob midpay"  
+[20] "if highprob_midpay:midprob_lowpay:NA_lowpay take action choose: highprob midpay"  
+[21] "if highprob_midpay:midprob_lowpay:NA_midpay take action choose: highprob midpay"  
+[22] "if highprob_midpay:midprob_midpay:NA_lowpay take action choose: highprob midpay"  
+[23] "if highprob_midpay:midprob_midpay:NA_midpay take action choose: highprob midpay"  
+[24] "if highprob_lowpay:lowprob_highpay:lowprob_NA take action choose: lowprob highpay"
+[25] "if highprob_lowpay:lowprob_highpay:NA_lowpay take action choose: lowprob highpay" 
+[26] "if lowprob_highpay:lowprob_lowpay:NA_lowpay take action choose: lowprob highpay"  
+[27] "if lowprob_highpay:lowprob_midpay:NA_lowpay take action choose: lowprob highpay"  
+[28] "if lowprob_highpay:lowprob_NA:midprob_lowpay take action choose: lowprob highpay" 
+[29] "if lowprob_highpay:midprob_lowpay:NA_lowpay take action choose: lowprob highpay"  
+[30] "if highprob_lowpay:lowprob_highpay:midprob_NA take action choose: midprob NA"     
+[31] "if highprob_lowpay:lowprob_lowpay:midprob_NA take action choose: midprob NA"      
+[32] "if highprob_lowpay:midprob_lowpay:midprob_NA take action choose: midprob NA"      
+[33] "if lowprob_highpay:lowprob_highpay:midprob_NA take action choose: midprob NA"     
+[34] "if lowprob_lowpay:lowprob_lowpay:midprob_NA take action choose: midprob NA"       
+[35] "if lowprob_lowpay:midprob_lowpay:midprob_NA take action choose: midprob NA"       
+[36] "if midprob_lowpay:midprob_lowpay:midprob_NA take action choose: midprob NA"       
+[37] "if highprob_lowpay:lowprob_midpay:NA_midpay take action choose: NA midpay"        
+[38] "if lowprob_highpay:lowprob_highpay:NA_midpay take action choose: NA midpay"       
+[39] "if lowprob_highpay:lowprob_midpay:NA_midpay take action choose: NA midpay"        
+[40] "if lowprob_highpay:midprob_lowpay:NA_midpay take action choose: NA midpay"        
+[41] "if lowprob_lowpay:lowprob_midpay:NA_midpay take action choose: NA midpay"         
+[42] "if lowprob_midpay:midprob_lowpay:NA_midpay take action choose: NA midpay"         
+[43] "if highprob_lowpay:midprob_midpay:NA_lowpay take action choose: midprob midpay"   
+[44] "if lowprob_highpay:lowprob_NA:midprob_midpay take action choose: midprob midpay"  
+[45] "if lowprob_highpay:midprob_midpay:NA_lowpay take action choose: midprob midpay"   
+[46] "if lowprob_midpay:midprob_midpay:NA_lowpay take action choose: midprob midpay"    
+[47] "if midprob_lowpay:midprob_midpay:NA_lowpay take action choose: midprob midpay"    
+[48] "if midprob_midpay:midprob_midpay:NA_lowpay take action choose: midprob midpay"    
+
+

@@ -1,4 +1,7 @@
 ##assumes setup from setup_params.
+library(tidyverse)
+library(patchwork)
+library(hash)
 
 if (length(prob_levels) != length(problevel_prob) ||
     length(payoff_levels) != length(paylevel_prob) ||

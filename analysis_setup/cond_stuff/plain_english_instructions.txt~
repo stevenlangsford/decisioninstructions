@@ -1,0 +1,15 @@
+CONDITION ONE
+*Simple*
+It's usually more useful to observe probability features.
+
+*Complex*
+Usually the best action is to observe a probability feature. But if you see that two options both have high probability (p~.9), you know you're going to choose one of them so it's best to see which has the higher payoff. If you run out of observations and have to choose between options with observed features and unobserved features, you should choose 'as if' the unobserved probabilities are about .5 and the unobserved payoffs are about 20.
+
+
+CONDITION TWO
+*Simple*
+It's usually more useful to observe payout features.
+
+*Complex*
+Usually the best action is to observe a payout feature. But you should observe a probability feature if you have more than one high payout option (v~100), 
+

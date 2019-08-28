@@ -14,6 +14,13 @@ names(paylevel_prob) <- payoff_levels
 names(problevel_value) <- prob_levels
 names(paylevel_value) <- payoff_levels
 
+##derived na expectation from levels/values
+prob_na_expected <- sum(problevel_prob * problevel_value)
+pay_na_expected <- sum(paylevel_prob * paylevel_value)
+
+value_na_na <- prob_na_expected * pay_na_expected
+
+
 ##memoize recursive constructor.
 seen_states <- hash()
 
