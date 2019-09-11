@@ -51,6 +51,8 @@ function makeTrial(idstring, obsbudget, p1, p2, p3, v1, v2, v3){
     this.ppntID = localStorage.getItem("ppntID");
     this.obsbudget = obsbudget; //tracker, decrements.
     this.obsbudget_initial = obsbudget; //recorder, fixed.
+    this.observations = [];//obs pushed here as they're made.
+    this.obstime = [];
     this.probfeatures = [p1, p2, p3];
     this.payfeatures = [v1, v2, v3];
     this.drawTime = -1;
@@ -63,7 +65,8 @@ function makeTrial(idstring, obsbudget, p1, p2, p3, v1, v2, v3){
     feature_lookup[idstring+"pay2"] = v2;
     feature_lookup[idstring+"pay3"] = v3;
     
-    this.drawMe = function(){	
+    this.drawMe = function(){
+	this.drawTime = Date.now();
 	//in polar cords, position1 is (d,0)
 	//position 2 is (d, 2pi/3)
 	//position 3 is (d, 4pi/3)
@@ -148,11 +151,14 @@ function makeTrial(idstring, obsbudget, p1, p2, p3, v1, v2, v3){
 //helper fns
 function get_current_info_message(){
     return "<p>You have "+trials[trialindex].obsbudget+" observation"+(trials[trialindex].obsbudget!=1 ? "s" : "")+" left this trial</p>"+
-	"<p>Total score so far: "+(scorecounter.toPrecision(3))+"</p>"; 
+	"<p>Total score so far: "+(parseFloat(scorecounter.toPrecision(3)))+"</p>"; 
 }
 
 function click_feature(featureid){
     //document.getElementById(featureid).style.display = "none";
+    trials[trialindex].observations.push(featureid);
+    trials[trialindex].obstime.push(Date.now());
+    
     if(!feature_live)return;
     
     if(trials[trialindex].obsbudget==0){
@@ -197,12 +203,18 @@ function click_choice(choiceid){
     choice_live = false;
     var id_split = choiceid.split("::");
 
-    var myprob = feature_lookup[id_split[0]]
-    var mypay =  feature_lookup[id_split[1]]
-    var myoption = id_split[0].split("_")[1].charAt(id_split[0].split("_")[1].length-1)
+    var myprob = feature_lookup[id_split[0]];
+    var mypay =  feature_lookup[id_split[1]];
+    var myoption = id_split[0].split("_")[1].charAt(id_split[0].split("_")[1].length-1);
 
+
+    
+    trials[trialindex].score_before_choice = scorecounter;
+    trials[trialindex].choice_time = Date.now();
+    
     if(Math.random() < myprob){
 	scorecounter+=parseFloat(mypay);
+	trials[trialindex].payout_received = true;
 	
 	document.getElementById("infodiv").innerHTML = "<p>Payout! Score increased by "+mypay+"</p><button onclick='nextTrial()'>Next</button>";
 	var info_width = document.getElementById('infodiv').offsetWidth; //there has GOT to be a better way to stay centered?
@@ -211,13 +223,14 @@ function click_choice(choiceid){
 	document.getElementById("infodiv").style.left = (window.innerWidth/2-info_width/2)+"px";
 	
     }else{
+	trials[trialindex].payout_received = false;
+	
 	document.getElementById("infodiv").innerHTML = "<p>This gamble did not pay out</p><button onclick='nextTrial()'>Next</button>";
 	var info_width = document.getElementById('infodiv').offsetWidth;
 	var info_height = document.getElementById('infodiv').offsetHeight;
 	document.getElementById("infodiv").style.top = (window.innerHeight/2-info_height/2-10)+"px";
 	document.getElementById("infodiv").style.left = (window.innerWidth/2-info_width/2)+"px";
     }
-
 
     //reveal all unobserved features
     for(var optionid=1; optionid<=3;optionid++){
@@ -244,6 +257,21 @@ function click_choice(choiceid){
 	    }
 	}//whichfeature
     }//whichoption
+
+    //save the response to db:
+    trials[trialindex].choice = choiceid.split("_")[0]+"_"+myoption;
+    trials[trialindex].score_after_choice = scorecounter;
+    trials[trialindex].condition = condition;
+    trials[trialindex].trialindex == trialindex;
+    
+    $.post("/response",{myresponse:JSON.stringify(trials[trialindex])},
+	   function(success){
+	       console.log(success);//probably 'success', might be an error
+	       //Note potential error not handled at all. Hah.
+	   }
+	  );
+    
+    
 }
 
 function nextTrial(){ //assumes all DOM elements associated with a trial have class 'trial'
@@ -302,7 +330,7 @@ function option_string(probid, payid, top, left, buttonbelow){
 
 //MAIN
 var condition = localStorage.getItem("condition");
-var n_trials = 3
+var n_trials = 35;
 
 var cond1_trialpool = shuffle([
 new makeTrial("trial0_",5,0.723,0.414,0.466,22.9,23.8,11.6),
