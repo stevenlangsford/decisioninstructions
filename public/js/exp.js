@@ -57,6 +57,8 @@ function makeTrial(idstring, obsbudget, p1, p2, p3, v1, v2, v3){
     this.payfeatures = [v1, v2, v3];
     this.drawTime = -1;
     this.idstring = idstring;
+
+    this.infostate = ["-","-","-","-","-","-"];//init: all unobserved. Keep 1-2-3 order while making observations, but used sorted order to save. Ok?
     
     feature_lookup[idstring+"prob1"] = p1;
     feature_lookup[idstring+"prob2"] = p2;
@@ -158,7 +160,10 @@ function click_feature(featureid){
     //document.getElementById(featureid).style.display = "none";
     trials[trialindex].observations.push(featureid);
     trials[trialindex].obstime.push(Date.now());
-    
+
+    var whoami = featureid.split("_")[1] //oh god so ugly! Oh well.
+    console.log(whoami)
+
     if(!feature_live)return;
     
     if(trials[trialindex].obsbudget==0){
@@ -263,6 +268,17 @@ function click_choice(choiceid){
     trials[trialindex].score_after_choice = scorecounter;
     trials[trialindex].condition = condition;
     trials[trialindex].trialindex == trialindex;
+
+    trials[trialindex].expectedvalue1 = trials[trialindex].probfeatures[0]*trials[trialindex].payfeatures[0];
+    trials[trialindex].expectedvalue2 = trials[trialindex].probfeatures[1]*trials[trialindex].payfeatures[1];
+    trials[trialindex].expectedvalue3 = trials[trialindex].probfeatures[2]*trials[trialindex].payfeatures[2];
+
+    trials[trialindex].expectedvalue_choice = myprob * mypay;
+
+    //information state (sorted as in R strategy search)
+    
+    
+    
     
     $.post("/response",{myresponse:JSON.stringify(trials[trialindex])},
 	   function(success){
