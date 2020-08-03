@@ -1,3 +1,8 @@
+var canvaswidth = window.innerWidth-30;
+var canvasheight = window.innerHeight-30;
+
+var phase = "phase0"; //phase1, phase2, phase3 set by splashscreen drawme. Changes rules for observation-budget / drawing. Sad about this global var hack, sorry.
+
 function shuffle(a) { //via https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array
     var j, x, i;
     for (i = a.length - 1; i > 0; i--) {
@@ -47,7 +52,56 @@ function get_obsbudget(){
 //stim setup:
 var feature_lookup = {};
 
+function splashScreen(text, caption){
+    this.text = text;
+    this.trialtype = "splash"
+    
+    this.drawMe = function(){
+	//do the phase transition. Gods I am so sad that this phase thing got patched on with global vars. Last complain-comment, just venting.
+	if(phase == "phase2") {
+	    console.log("entering phase 3")
+	    phase = "phase3"
+	}else if(phase == "phase1"){
+	    console.log("entering phase 2")
+	    phase = "phase2"
+	}else{
+	    console.log("entering phase 1")
+	    phase = "phase1";
+	}
+	
+	document.getElementById("uberdiv").innerHTML = "<canvas id=\"ubercanvas\" width=\""+canvaswidth+"\" height=\""+canvasheight+"\" ></canvas>";
+	
+	var canvas = document.getElementById("ubercanvas");
+	console.log("got canvas?")
+	console.log(canvas);
+	
+	var ctx = canvas.getContext('2d');
+	//	ctx.clearRect(0,0,canvas.width,canvas.height);
+
+	ctx.font = "3em Arial";
+	ctx.fillStyle = "black";
+	ctx.textAlign = "center";
+	ctx.fillText(this.text, canvas.width/2, canvas.height/2);
+
+	abs_holder_div.innerHTML = "<img id='splash' src='/img/nextarrow.png' "+
+	    "onmouseenter=\"this.src='"+"img/nextarrow_highlight.png"+"'\""+
+	    "onmouseleave=\"this.src='"+"img/nextarrow.png"+"'\""+
+	    "onclick=\"nextTrial()\""+
+	    "style='"+
+	    "height:"+100+"px; "+
+	    "width:"+250+"px; "+
+	    "position:fixed; "+
+	    "top:"+(canvas.height/2+100)+"px; "+
+	    "left:"+(canvas.width/2-150)+"px; "+
+	    "'>"+"<div class='demoimg'><p>"+caption+"</p></div>";
+	
+    }
+    
+}
+
 function makeTrial(idstring, obsbudget, p1, p2, p3, v1, v2, v3){
+
+
     this.ppntID = localStorage.getItem("ppntID");
     this.obsbudget = obsbudget; //tracker, decrements.
     this.obsbudget_initial = obsbudget; //recorder, fixed.
@@ -57,8 +111,9 @@ function makeTrial(idstring, obsbudget, p1, p2, p3, v1, v2, v3){
     this.payfeatures = [v1, v2, v3];
     this.drawTime = -1;
     this.idstring = idstring;
-
+    this.phase = phase;
     this.infostate = ["-","-","-","-","-","-"];//init: all unobserved. Keep 1-2-3 order while making observations, but used sorted order to save. Ok?
+
     
     feature_lookup[idstring+"prob1"] = p1;
     feature_lookup[idstring+"prob2"] = p2;
@@ -68,6 +123,7 @@ function makeTrial(idstring, obsbudget, p1, p2, p3, v1, v2, v3){
     feature_lookup[idstring+"pay3"] = v3;
     
     this.drawMe = function(){
+
 	this.drawTime = Date.now();
 	//in polar cords, position1 is (d,0)
 	//position 2 is (d, 2pi/3)
@@ -140,27 +196,108 @@ function makeTrial(idstring, obsbudget, p1, p2, p3, v1, v2, v3){
 	document.getElementById("infodiv").style.top = (window.innerHeight/2-info_height/2-10)+"px";
 	document.getElementById("infodiv").style.left = (window.innerWidth/2-info_width/2)+"px";
 
-	//hide choice initially: revealed when obsbudget goes to zero.
-	var cbs = document.getElementsByClassName("choicebutton");
-	for (var i = 0; i < cbs.length; i++) {
-	    cbs[i].style.display = "none";
-	} 
-    }
-}
+	//for phase1 and 2, pre-click everything and change obsbudget message: here be dragons
+// 	if(phase == "phase1" || phase == "phase2"){
+// 	    var featureids = [
+// 		trials[trialindex].idstring+"_prob1",
+// 		trials[trialindex].idstring+"_prob2",
+// 		trials[trialindex].idstring+"_prob3",
+// 		trials[trialindex].idstring+"_pay1",
+// 		trials[trialindex].idstring+"_pay2",
+// 		trials[trialindex].idstring+"_pay3"
+// 		]
+	    
+// 	    for(var i = 0; i<6 ; i++){
+// 		var featureid = featureids[i]; //doesn't js have iterators now? Can't you for x in collection?
+		
+// 		document.getElementById("infodiv").innerHTML= get_current_info_message();
+// 		//copypasted from click_feature
+// 		var me = document.getElementById(featureid);
+// 		console.log("this is me:")
+// 		console.log(me)
+// //		me.parentNode.removeChild(me);
+		
+// 		var mynumber = ""+feature_lookup[featureid];
+	    
+// 	    for(var i=0;i<mynumber.length; i++){
+// 		var mychar = mynumber.charAt(i) == "." ? "pt" : mynumber.charAt(i);
+// 		var digit_imgstring = "<img class='trial' src='digits/"+mychar+".png' "+
+// 		    "height='"+digitheight+"px' "+
+// 		    "width='"+digitwidth+"px' "+
+// 		    "style=\"position:fixed;"+
+// 		    "top:"+(me.style.top)+";"+
+// 		    "left:"+(parseFloat(me.style.left, 10)+digitwidth*i)+"px;"+
+// 		    "\">";
+// 		document.getElementById("uberdiv").innerHTML+=digit_imgstring;
+// 	    }
+// 	    }}
+	
+// 	// //hide choice initially: revealed when obsbudget goes to zero.
+// 	// var cbs = document.getElementsByClassName("choicebutton");
+// 	// for (var i = 0; i < cbs.length; i++) {
+// 	//     cbs[i].style.display = "none";
+	// 	// }
 
+		if(phase == "phase1" || phase == "phase2"){
+		    trials[trialindex].obsbudget = 6 //That's me! Avoiding 'this'. All info available in phase 1 and phase 2.
+		    click_feature(trials[trialindex].idstring+"prob1")
+		    click_feature(trials[trialindex].idstring+"prob2")
+		    click_feature(trials[trialindex].idstring+"prob3")
+		    click_feature(trials[trialindex].idstring+"pay1")
+		    click_feature(trials[trialindex].idstring+"pay2")
+		    click_feature(trials[trialindex].idstring+"pay3")
+		}//end if phase 1 or 2
+    }//end drawme
+}//end maketrial
+
+function doclick(){
+
+    var featureid = trials[trialindex].idstring+"prob1"
+    
+    document.getElementById("infodiv").innerHTML= get_current_info_message();
+	
+    var me = document.getElementById(featureid);
+    console.log(me);
+    return;
+    
+    me.parentNode.removeChild(me);
+    
+    var mynumber = ""+feature_lookup[featureid];
+
+    for(var i=0;i<mynumber.length; i++){
+	var mychar = mynumber.charAt(i) == "." ? "pt" : mynumber.charAt(i);
+	var digit_imgstring = "<img class='trial' src='digits/"+mychar+".png' "+
+	    "height='"+digitheight+"px' "+
+	    "width='"+digitwidth+"px' "+
+	    "style=\"position:fixed;"+
+	    "top:"+(me.style.top)+";"+
+	    "left:"+(parseFloat(me.style.left, 10)+digitwidth*i)+"px;"+
+	    "\">";
+	document.getElementById("uberdiv").innerHTML+=digit_imgstring;
+    }
+    
+    // console.log("boom:"+trials[trialindex].idstring+"_prob1");
+    // click_feature(trials[trialindex].idstring+"_prob1")
+}
 
 
 //helper fns
 function get_current_info_message(){
-    return "<p>You have "+trials[trialindex].obsbudget+" observation"+(trials[trialindex].obsbudget!=1 ? "s" : "")+" left this trial</p>"+
-	"<p>Total score so far: "+(parseFloat(scorecounter.toPrecision(3)))+"</p>"; 
+    if(phase =="phase3"){
+	return "<p>You have "+trials[trialindex].obsbudget+" observation"+(trials[trialindex].obsbudget!=1 ? "s" : "")+" left this trial</p>"+
+	    "<p>Total score so far: "+(parseFloat(scorecounter.toPrecision(3)))+"</p>";
+    }
+    else{
+	return "<p>Total score so far: "+(parseFloat(scorecounter.toPrecision(3)))+"</p>";
+    }
 }
 
 function click_feature(featureid){
     //document.getElementById(featureid).style.display = "none";
     trials[trialindex].observations.push(featureid);
     trials[trialindex].obstime.push(Date.now());
-
+    console.log(featureid)
+    
     var whoami = featureid.split("_")[1] //oh god so ugly! Oh well.
     console.log(whoami)
 
@@ -221,20 +358,31 @@ function click_choice(choiceid){
 	scorecounter+=parseFloat(mypay);
 	trials[trialindex].payout_received = true;
 	
-	document.getElementById("infodiv").innerHTML = "<p>Payout! Score increased by "+mypay+"</p><button onclick='nextTrial()'>Next</button>";
-	var info_width = document.getElementById('infodiv').offsetWidth; //there has GOT to be a better way to stay centered?
-	var info_height = document.getElementById('infodiv').offsetHeight;
-	document.getElementById("infodiv").style.top = (window.innerHeight/2-info_height/2-10)+"px";
-	document.getElementById("infodiv").style.left = (window.innerWidth/2-info_width/2)+"px";
+	// document.getElementById("infodiv").innerHTML = "<p>Payout! Score increased by "+mypay+"</p><button onclick='nextTrial()'>Next</button>";
+	// var info_width = document.getElementById('infodiv').offsetWidth; //there has GOT to be a better way to stay centered?
+	// var info_height = document.getElementById('infodiv').offsetHeight;
+	// document.getElementById("infodiv").style.top = (window.innerHeight/2-info_height/2-10)+"px";
+	// document.getElementById("infodiv").style.left = (window.innerWidth/2-info_width/2)+"px";
+
+		document.getElementById("uberdiv").innerHTML = "<p class='feedbackpara'>Payout! Score increased by "+mypay+"<br/><button onclick='nextTrial()'>Next</button></p>";
+	var info_width = document.getElementById('uberdiv').offsetWidth; //there has GOT to be a better way to stay centered?
+	var info_height = document.getElementById('uberdiv').offsetHeight;
+	document.getElementById("uberdiv").style.top = (window.innerHeight/2-info_height/2-10)+"px";
+	document.getElementById("uberdiv").style.left = (window.innerWidth/2-info_width/2)+"px";
 	
     }else{
 	trials[trialindex].payout_received = false;
 	
-	document.getElementById("infodiv").innerHTML = "<p>This gamble did not pay out</p><button onclick='nextTrial()'>Next</button>";
-	var info_width = document.getElementById('infodiv').offsetWidth;
-	var info_height = document.getElementById('infodiv').offsetHeight;
-	document.getElementById("infodiv").style.top = (window.innerHeight/2-info_height/2-10)+"px";
-	document.getElementById("infodiv").style.left = (window.innerWidth/2-info_width/2)+"px";
+	// document.getElementById("infodiv").innerHTML = "<p>This gamble did not pay out</p><button onclick='nextTrial()'>Next</button>";
+	// var info_width = document.getElementById('infodiv').offsetWidth;
+	// var info_height = document.getElementById('infodiv').offsetHeight;
+	// document.getElementById("infodiv").style.top = (window.innerHeight/2-info_height/2-10)+"px";
+	// document.getElementById("infodiv").style.left = (window.innerWidth/2-info_width/2)+"px";
+		document.getElementById("uberdiv").innerHTML = "<p class = 'feedbackpara' >This gamble did not pay out<br/><button onclick='nextTrial()'>Next</button></p>";
+	var info_width = document.getElementById('uberdiv').offsetWidth;
+	var info_height = document.getElementById('uberdiv').offsetHeight;
+	document.getElementById("uberdiv").style.top = (window.innerHeight/2-info_height/2-10)+"px";
+	document.getElementById("uberdiv").style.left = (window.innerWidth/2-info_width/2)+"px";
     }
 
     //reveal all unobserved features
@@ -295,6 +443,7 @@ function nextTrial(){ //assumes all DOM elements associated with a trial have cl
     // while(paras[0]){
     // 	paras[0].parentNode.removeChild(paras[0]);
     // }
+    document.getElementById("abs_holder_div").innerHTML = "";
     trialindex++;
     choice_live = false; //toggle responsiveness of these buttons.
     feature_live = true;
@@ -328,8 +477,22 @@ function button_string(id, myclass, img, imghover, imgclick, clickfn, top, left,
 function option_string(probid, payid, top, left, buttonbelow){
     var viewportwidth = window.innerWidth; //used to center element. Viewport size might change! You'll get the one that was current at call time.
     var viewportheight = window.innerHeight;
-
-    var mychoosebutton = button_string(probid+"::"+payid,"trial choicebutton","buttons/choosebutton.png","buttons/choosebutton_hilight.png","buttons/choosebutton_pulled.png","click_choice",
+    
+    var my_button_img;
+    var my_highlight_img;
+    var mypulled_img;
+    
+    if(phase == "phase1" || phase == "phase2"){
+	my_button_img = (buttonbelow ? "buttons/choosebutton_withcaptionabove.png" : "buttons/choosebutton_withcaption.png");
+	my_highlight_img = (buttonbelow ? "buttons/choosebutton_withcaptionabove_highlight.png" : "buttons/choosebutton_withcaption_highlight.png");
+	my_pulled_img = (buttonbelow ? "buttons/choosebutton_withcaptionabove_pulled.png" : "buttons/choosebutton_withcaption_pulled.png");
+    }else{
+	my_button_img = "buttons/choosebutton.png"
+	my_highlight_img = "buttons/choosebutton_hilight.png"
+	my_pulled_img = "buttons/choosebutton_pulled.png"
+    }
+    //    var mychoosebutton = button_string(probid+"::"+payid,"trial choicebutton","buttons/choosebutton.png","buttons/choosebutton_hilight.png","buttons/choosebutton_pulled.png","click_choice",
+        var mychoosebutton = button_string(probid+"::"+payid,"trial choicebutton",my_button_img,my_highlight_img,my_pulled_img,"click_choice",
 				       (buttonbelow ? top+buttonheight*.6 : top-buttonheight*.9),
 				       left+buttonwidth*.1,
 				       buttonheight*.8,
@@ -2355,26 +2518,62 @@ new makeTrial("trial999_",5,0.0964,0.533,0.479,46.6,6.04,99.5)
 ]);
 
 var trials = [];
-for(var i = 0; i < n_trials; i++){
-    condition == "cond1" ? trials.push(cond1_trialpool[i]) : trials.push(cond2_trialpool[i]);
-}
-    
-// for(var atrial = 0; atrial < 3; atrial++){
-//     trials.push( new makeTrial("trial"+atrial+"_", get_obsbudget(), get_prob(), get_prob(), get_prob(), get_payoff(), get_payoff(), get_payoff()))
+
+//old version: just two conds.
+
+// for(var i = 0; i < n_trials; i++){
+//     condition == "cond1" ? trials.push(cond1_trialpool[i]) : trials.push(cond2_trialpool[i]);
 // }
 
-
-var superbest = 0;
-var rnd_guess = 0;
-for(var i = 0; i<trials.length;i++){
-    var ex_val = [];
-    for(var option =0;option<3;option++){
-	ex_val.push(trials[i].probfeatures[option]*trials[i].payfeatures[option])
-    }
-    superbest+=(ex_val.reduce(function(a, b) {return Math.max(a, b)}));
-    rnd_guess+=(ex_val.reduce(function(a, b) {return a+b}))/ex_val.length;//ugh, javascript? Better way avg?
-
+var mytrials;
+if(condition == "cond1"){
+    mytrials = cond1_trialpool
+}else{
+    mytrials = cond2_trialpool
 }
+
+var trialcounter = 0;
+var phase1_n = 2;
+var phase2_n = 2;
+var phase3_n = 2;
+
+trials.push(new splashScreen("Part One", "This is a practice round. In this part you get to see all the features of all the options."))
+
+for(var i =0; i<phase1_n;i++){
+    trials.push(mytrials[trialcounter])
+    trialcounter++;
+}
+
+trials.push(new splashScreen("Part Two", "This is an incentives round. In this part you get to see all the features of all the options."))
+
+for(var i =0; i<phase2_n;i++){
+    trials.push(mytrials[trialcounter])
+    trialcounter++;
+}
+
+trials.push(new splashScreen("Part Three", "This is a strategic round. In this part some of the features are hidden."))
+
+for(var i =0; i<phase3_n;i++){
+    trials.push(mytrials[trialcounter])
+    trialcounter++;
+}
+
+
+	    
+// var superbest = 0;
+// var rnd_guess = 0;
+// for(var i = 0; i<trials.length;i++){
+//     var ex_val = [];
+//     for(var option =0;option<3;option++){
+// 	ex_val.push(trials[i].probfeatures[option]*trials[i].payfeatures[option])
+//     }
+//     superbest+=(ex_val.reduce(function(a, b) {return Math.max(a, b)}));
+//     rnd_guess+=(ex_val.reduce(function(a, b) {return a+b}))/ex_val.length;//ugh, javascript? Better way avg?
+
+// }
+
+superbest = "unknown"; //new splash screens mees up this scraping thing: put these in constructor and add it on draw. End-of-exp feedback still desirable, but split by stage?
+rnd_guess = "unknown";
 
 localStorage.setItem("bestscore",superbest);
 localStorage.setItem("rndscore",rnd_guess);
