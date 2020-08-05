@@ -2552,9 +2552,9 @@ if(condition == "cond1"){
 }
 
 var trialcounter = 0;
-var phase1_n = 2;
-var phase2_n = 2;
-var phase3_n = 2;
+var phase1_n = 10;
+var phase2_n = 30;
+var phase3_n = 30;
 
 trials.push(new splashScreen("Round One", "This is a practice round. In this part you get to see all the features of all the options."))
 
