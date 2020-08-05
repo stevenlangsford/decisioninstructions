@@ -13,8 +13,7 @@ var ppntID = Math.round(Math.random()*10000000);
 localStorage.setItem("ppntID",ppntID); //cookie alternative, retrive with localStorage.getItem("ppntID"). Only stores strings. Used in exp.js to tag trials.
 var condition = shuffle(["cond1","cond2"])[0]
 var instruction_type = shuffle(["simple","complex","none"])[0]
-localStorage.setItem("condition", condition);
-localStorage.setItem("instruction_type", instruction_type);
+
 
 var myinstructions = "";
 if(condition == "cond1"){
@@ -34,11 +33,16 @@ if(condition == "cond2"){
     }
 }
 
+localStorage.setItem("condition", condition);
+localStorage.setItem("instruction_type", instruction_type);
+localStorage.setItem("myinstructions", myinstructions);
+
+
 var dev = true;//used only in instuctionlist (immediately below) for the moment, could consider putting it in localStorage though and having it trigger verbosity later. Set to false if public-facing.
 var instructionindex = 0;
 var instructionlist = [dev ? "Development version: <button onclick='startExp()'>Skip instructions</button>" : "Hi! These are the instructions. Please read them carefully, there will be a short quiz at the end.", "This is part of a study being run by the University of Michigan. By clicking 'Next', you are agreeing to take part in it. To participate, you must be over 18. You should know that you're free to withdraw at any time (although you'll only be paid on completion), and that although data gained from this study may be published or viewed by University of Michigan staff and relevant government offices, you will not be identified and your personal details will not be divulged, nor will anything be linked to your Turk Id. Any identifiable data will be used for administration only and deleted on completion of the study, non-identifiable data may be used in future research. </br><span style=\"font-size:.8em\">Please direct any questions about this study to Steven Langsford, reachable at <strong>slangsfo at umich dot edu</strong>. The principle investigator is Prof. Richard Lewis. If you have concerns regarding the ethics of this study and don't want to contact the investigators directly, you can contact the Health Sciences and Behavioral Sciences review board at irbhsbs at umich dot edu or phone: (734) 936-0933 or toll free, (866) 936-0933</span>","This study takes about 15 minutes, please only continue if you have 15 minutes free without interruptions. Although you may not directly benefit from being in this study, the results will help us understand how people make decisions under uncertainty and risk. We don't believe there are any risks from participating in this research.",
 		       
-		       "This study asks you to try and choose between risky options.","On each trial, there will be three options to choose from.","Each of the options is a gamble with two features: a probability of paying out and an amount to pay out.","There is no deception in this study.</br> The chance the payout amount will be added to your score is exactly the probability stated for that option.", "The challenge here is that usually you will have to choose an option based on limited information","For each trial you will have an observation budget between one and six observations.","Each observation lets you reveal one feature, either a probability or a payoff amount for one of the options. Reveal features by clicking on them.","You decide which features you want to observe. "+myinstructions,"You can only make a choice after you have used all your observations. Please try and get the best score you possibly can. We pay every participant the same, but at the end of the study we'll show you how you did compared to the optimal strategy and random performance. </br>Good luck!",""]
+		       "This study asks you to try and choose between risky options.","On each trial, there will be three options to choose from.","Each of the options is a gamble with two features: a probability of paying out and an amount to pay out.","There is no deception in this study.</br> The chance the payout amount will be added to your score is exactly the probability stated for that option.", "There are three rounds. The first round is a practice round so you can see some example gambles. The second round is an incentives round, where your score will be counted. The third round is a strategy round. In that part, you'll have to select a gamble based on limited information. You will have some control over what information you see.", "For each trial in the third round you will have an observation budget between one and six observations.<br/> Each observation lets you reveal one feature, either a probability or a payoff amount for one of the options. Reveal features by clicking on them.<br/>You decide which features you want to observe. "+myinstructions,"You can only make a choice after you have used all your observations. Please try and get the best score you possibly can. We pay every participant the same, but at the end of the study we'll show you how you did compared to the optimal strategy and random performance. </br>Good luck!",""]
 
 function nextInstructions(){
     var nextButton = "<button id='nextbutton' onclick='nextInstructions()'>Next</button>"
@@ -108,7 +112,7 @@ function demographics(){
 	"<input type=\"radio\" name=\"gender\" id=\"other\" value=\"other\">&nbsp Other"+
 	"</td></tr>"+
 	"<tr><td>"+
-	"Age:<input type=\"text\" id=\"age\">"+
+	"Age:<input type=\"number\" id=\"age\" min=\"0\">"+
 	"</td></tr>"+
 	"<tr><td>"+
 	"Native Language(s):<input type=\"text\" id=\"language\">"+
@@ -371,6 +375,12 @@ function countrypicker(){
 }
 
 function demographicsvalidate(){
+    var agecheck = parseFloat(document.getElementById("age").value)
+    if(isNaN(agecheck)||agecheck < 0){
+	alert("Invalid age") //Just for Logan really. But he's right...
+	return;
+    }
+	
     var dataObj = {ppntID:ppntID};
     var genderchoice=document.getElementsByName("gender");
     var genderflag = false;

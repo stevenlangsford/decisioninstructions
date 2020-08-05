@@ -1,6 +1,9 @@
 var canvaswidth = window.innerWidth-30;
 var canvasheight = window.innerHeight-30;
 
+var superbest = 0; //new splash screens mees up this scraping thing: put these in constructor and add it on draw. End-of-exp feedback still desirable, but split by stage?
+var rnd_guess = 0;
+
 var phase = "phase0"; //phase1, phase2, phase3 set by splashscreen drawme. Changes rules for observation-budget / drawing. Sad about this global var hack, sorry.
 
 function shuffle(a) { //via https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array
@@ -81,7 +84,7 @@ function splashScreen(text, caption){
 	ctx.font = "3em Arial";
 	ctx.fillStyle = "black";
 	ctx.textAlign = "center";
-	ctx.fillText(this.text, canvas.width/2, canvas.height/2);
+	ctx.fillText(this.text, canvas.width/2, 100); //was canvas.height/2
 
 	abs_holder_div.innerHTML = "<img id='splash' src='/img/nextarrow.png' "+
 	    "onmouseenter=\"this.src='"+"img/nextarrow_highlight.png"+"'\""+
@@ -91,7 +94,7 @@ function splashScreen(text, caption){
 	    "height:"+100+"px; "+
 	    "width:"+250+"px; "+
 	    "position:fixed; "+
-	    "top:"+(canvas.height/2+100)+"px; "+
+	    "top:"+300+"px; "+// was: (canvas.height/2+100)
 	    "left:"+(canvas.width/2-150)+"px; "+
 	    "'>"+"<div class='demoimg'><p>"+caption+"</p></div>";
 	
@@ -444,12 +447,28 @@ function nextTrial(){ //assumes all DOM elements associated with a trial have cl
     // 	paras[0].parentNode.removeChild(paras[0]);
     // }
     document.getElementById("abs_holder_div").innerHTML = "";
+
+    if(trials[trialindex].probfeatures!=null){ //ie if you're on a real trial not a splash screen.
+    var trialvals = [trials[trialindex].payfeatures[0]*trials[trialindex].probfeatures[0],
+				     trials[trialindex].payfeatures[1]*trials[trialindex].probfeatures[1],
+				     trials[trialindex].payfeatures[2]*trials[trialindex].probfeatures[2]]
+    
+    superbest = superbest + Math.max(trialvals[0],trialvals[1],trialvals[2]); //super best only ever harvests expected value. Ok?
+
+    rnd_guess = rnd_guess + shuffle(trialvals)[0]; //rnd also in expected value. Whatever, didn't feel like sim gambles.
+
+    console.log("evals: "+superbest + ":"+rnd_guess+":"+scorecounter);
+    }
+    
     trialindex++;
     choice_live = false; //toggle responsiveness of these buttons.
     feature_live = true;
 
     if(trialindex>=trials.length){
 	localStorage.setItem("ppntscore",scorecounter);
+	localStorage.setItem("bestscore",superbest);
+	localStorage.setItem("rndscore",rnd_guess);
+
 	$.post("/finish",function(data){window.location.replace(data)});
 	return;
     }else{
@@ -2537,21 +2556,21 @@ var phase1_n = 2;
 var phase2_n = 2;
 var phase3_n = 2;
 
-trials.push(new splashScreen("Part One", "This is a practice round. In this part you get to see all the features of all the options."))
+trials.push(new splashScreen("Round One", "This is a practice round. In this part you get to see all the features of all the options."))
 
 for(var i =0; i<phase1_n;i++){
     trials.push(mytrials[trialcounter])
     trialcounter++;
 }
 
-trials.push(new splashScreen("Part Two", "This is an incentives round. In this part you get to see all the features of all the options."))
+trials.push(new splashScreen("Round Two", "This is an incentives round. From now on your choices count towards your final score. For now you still get to see all the features of all the options."))
 
 for(var i =0; i<phase2_n;i++){
     trials.push(mytrials[trialcounter])
     trialcounter++;
 }
 
-trials.push(new splashScreen("Part Three", "This is a strategic round. In this part some of the features are hidden."))
+trials.push(new splashScreen("Round Three", "This is a strategic round. In this part some of the features are hidden.<br/>"+localStorage.getItem("myinstructions")))
 
 for(var i =0; i<phase3_n;i++){
     trials.push(mytrials[trialcounter])
@@ -2572,11 +2591,7 @@ for(var i =0; i<phase3_n;i++){
 
 // }
 
-superbest = "unknown"; //new splash screens mees up this scraping thing: put these in constructor and add it on draw. End-of-exp feedback still desirable, but split by stage?
-rnd_guess = "unknown";
 
-localStorage.setItem("bestscore",superbest);
-localStorage.setItem("rndscore",rnd_guess);
 
 
 trials[0].drawMe()
