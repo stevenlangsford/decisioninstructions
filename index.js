@@ -61,10 +61,10 @@ app.get("/getresponses",requireLogin,function(req,res){
 		{console.error(err); res.send("Error "+err);}
 		}else{
 		    //TODO do something sensible if there are no results!
-		    var fields = Object.keys(JSON.parse(result.rows[0].responseobj));
+		    var fields = Object.keys(JSON.parse(result.rows[0].response));
 		    var responses = [];
 		    	   for(var i=0;i<result.rowCount;i++){
-			       responses.push(JSON.parse(result.rows[i].responseobj));
+			       responses.push(JSON.parse(result.rows[i].response));
 			   }
 
 		    var response_csv = json2csv({data: responses, fields:fields});

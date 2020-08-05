@@ -339,10 +339,14 @@ function click_feature(featureid){
 	    "\">";
 	document.getElementById("uberdiv").innerHTML+=digit_imgstring;
     }
-
 }
 
 function click_choice(choiceid){
+    //dragons
+    if(trials[trialindex].obsbudget>0){
+	alert("You still have observations left. Please use all your observations before making a choice.");
+	return;
+    }
     if(!choice_live)return;
     feature_live = false;
     choice_live = false;
@@ -2552,8 +2556,8 @@ if(condition == "cond1"){
 }
 
 var trialcounter = 0;
-var phase1_n = 10;
-var phase2_n = 30;
+var phase1_n = 5;
+var phase2_n = 20;
 var phase3_n = 30;
 
 trials.push(new splashScreen("Round One", "This is a practice round. In this part you get to see all the features of all the options."))
