@@ -50,7 +50,7 @@ function get_payoff(){
 }
 
 function get_obsbudget(){
-    return shuffle([1,2,3,4,5,6])[0];
+    return shuffle([1,2,3,4,5])[0]; //used to go up to 6, but now there's an all-revealed phase1 and phase2, can attncheck on those.
 }
 //stim setup:
 var feature_lookup = {};
@@ -62,21 +62,21 @@ function splashScreen(text, caption){
     this.drawMe = function(){
 	//do the phase transition. Gods I am so sad that this phase thing got patched on with global vars. Last complain-comment, just venting.
 	if(phase == "phase2") {
-	    console.log("entering phase 3")
+//	    console.log("entering phase 3")
 	    phase = "phase3"
 	}else if(phase == "phase1"){
-	    console.log("entering phase 2")
+//	    console.log("entering phase 2")
 	    phase = "phase2"
 	}else{
-	    console.log("entering phase 1")
+//	    console.log("entering phase 1")
 	    phase = "phase1";
 	}
 	
 	document.getElementById("uberdiv").innerHTML = "<canvas id=\"ubercanvas\" width=\""+canvaswidth+"\" height=\""+canvasheight+"\" ></canvas>";
 	
 	var canvas = document.getElementById("ubercanvas");
-	console.log("got canvas?")
-	console.log(canvas);
+	// console.log("got canvas?")
+	// console.log(canvas);
 	
 	var ctx = canvas.getContext('2d');
 	//	ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -114,7 +114,7 @@ function makeTrial(idstring, obsbudget, p1, p2, p3, v1, v2, v3){
     this.payfeatures = [v1, v2, v3];
     this.drawTime = -1;
     this.idstring = idstring;
-    this.phase = phase;
+
     this.infostate = ["-","-","-","-","-","-"];//init: all unobserved. Keep 1-2-3 order while making observations, but used sorted order to save. Ok?
 
     
@@ -126,7 +126,8 @@ function makeTrial(idstring, obsbudget, p1, p2, p3, v1, v2, v3){
     feature_lookup[idstring+"pay3"] = v3;
     
     this.drawMe = function(){
-
+	
+	this.phase = phase;
 	this.drawTime = Date.now();
 	//in polar cords, position1 is (d,0)
 	//position 2 is (d, 2pi/3)
@@ -253,35 +254,33 @@ function makeTrial(idstring, obsbudget, p1, p2, p3, v1, v2, v3){
     }//end drawme
 }//end maketrial
 
-function doclick(){
+// function doclick(){
 
-    var featureid = trials[trialindex].idstring+"prob1"
+//     var featureid = trials[trialindex].idstring+"prob1"
     
-    document.getElementById("infodiv").innerHTML= get_current_info_message();
+//     document.getElementById("infodiv").innerHTML= get_current_info_message();
 	
-    var me = document.getElementById(featureid);
-    console.log(me);
-    return;
+//     var me = document.getElementById(featureid);
     
-    me.parentNode.removeChild(me);
+//     me.parentNode.removeChild(me);
     
-    var mynumber = ""+feature_lookup[featureid];
+//     var mynumber = ""+feature_lookup[featureid];
 
-    for(var i=0;i<mynumber.length; i++){
-	var mychar = mynumber.charAt(i) == "." ? "pt" : mynumber.charAt(i);
-	var digit_imgstring = "<img class='trial' src='digits/"+mychar+".png' "+
-	    "height='"+digitheight+"px' "+
-	    "width='"+digitwidth+"px' "+
-	    "style=\"position:fixed;"+
-	    "top:"+(me.style.top)+";"+
-	    "left:"+(parseFloat(me.style.left, 10)+digitwidth*i)+"px;"+
-	    "\">";
-	document.getElementById("uberdiv").innerHTML+=digit_imgstring;
-    }
+//     for(var i=0;i<mynumber.length; i++){
+// 	var mychar = mynumber.charAt(i) == "." ? "pt" : mynumber.charAt(i);
+// 	var digit_imgstring = "<img class='trial' src='digits/"+mychar+".png' "+
+// 	    "height='"+digitheight+"px' "+
+// 	    "width='"+digitwidth+"px' "+
+// 	    "style=\"position:fixed;"+
+// 	    "top:"+(me.style.top)+";"+
+// 	    "left:"+(parseFloat(me.style.left, 10)+digitwidth*i)+"px;"+
+// 	    "\">";
+// 	document.getElementById("uberdiv").innerHTML+=digit_imgstring;
+//     }
     
-    // console.log("boom:"+trials[trialindex].idstring+"_prob1");
-    // click_feature(trials[trialindex].idstring+"_prob1")
-}
+//     // console.log("boom:"+trials[trialindex].idstring+"_prob1");
+//     // click_feature(trials[trialindex].idstring+"_prob1")
+// }
 
 
 //helper fns
@@ -422,19 +421,17 @@ function click_choice(choiceid){
     trials[trialindex].choice = choiceid.split("_")[0]+"_"+myoption;
     trials[trialindex].score_after_choice = scorecounter;
     trials[trialindex].condition = condition;
-    trials[trialindex].trialindex == trialindex;
-
+    trials[trialindex].trialindex = trialindex;
+    
+    trials[trialindex].chose_prob = myprob;
+    trials[trialindex].chose_pay = mypay;
+    trials[trialindex].chose_expectation = myprob*mypay;
+    
     trials[trialindex].expectedvalue1 = trials[trialindex].probfeatures[0]*trials[trialindex].payfeatures[0];
     trials[trialindex].expectedvalue2 = trials[trialindex].probfeatures[1]*trials[trialindex].payfeatures[1];
     trials[trialindex].expectedvalue3 = trials[trialindex].probfeatures[2]*trials[trialindex].payfeatures[2];
-
-    trials[trialindex].expectedvalue_choice = myprob * mypay;
-
+    
     //information state (sorted as in R strategy search)
-    
-    
-    
-    
     $.post("/response",{myresponse:JSON.stringify(trials[trialindex])},
 	   function(success){
 	       console.log(success);//probably 'success', might be an error
@@ -461,7 +458,7 @@ function nextTrial(){ //assumes all DOM elements associated with a trial have cl
 
     rnd_guess = rnd_guess + shuffle(trialvals)[0]; //rnd also in expected value. Whatever, didn't feel like sim gambles.
 
-    console.log("evals: "+superbest + ":"+rnd_guess+":"+scorecounter);
+//    console.log("evals: "+superbest + ":"+rnd_guess+":"+scorecounter);
     }
     
     trialindex++;
@@ -1698,7 +1695,7 @@ new makeTrial("trial156_",5,0.961,0.182,0.514,2.03,95.7,98.1),
 new makeTrial("trial157_",5,0.4,0.508,0.403,53.4,45.2,97.6),
 new makeTrial("trial158_",2,0.484,0.511,0.47,97,6.29,0.676),
 new makeTrial("trial159_",3,0.163,0.944,0.56,50.9,91.2,6.81),
-new makeTrial("trial160_",1,0.000972,0.599,0.878,54.4,99.2,98.7),
+new makeTrial("trial160_",1,0.0,0.599,0.878,54.4,99.2,98.7),
 new makeTrial("trial161_",3,0.0139,0.89,0.526,97.6,98.4,99.4),
 new makeTrial("trial162_",5,0.172,0.479,0.0641,92,46.3,3.78),
 new makeTrial("trial163_",6,0.889,0.46,0.114,3.46,52.6,95.6),
@@ -1738,7 +1735,7 @@ new makeTrial("trial196_",3,0.576,0.894,0.145,1.73,53.9,7.3),
 new makeTrial("trial197_",5,0.411,0.847,0.0138,92.6,49.6,45.8),
 new makeTrial("trial198_",6,0.45,0.46,0.821,4.58,5.1,97.7),
 new makeTrial("trial199_",1,0.0819,0.484,0.967,1.98,8.39,54.6),
-new makeTrial("trial200_",6,0.858,0.000585,0.85,99.7,4.83,95.3),
+new makeTrial("trial200_",6,0.858,0.0,0.85,99.7,4.83,95.3),
 new makeTrial("trial201_",6,0.41,0.143,0.484,46.6,54.7,48.8),
 new makeTrial("trial202_",4,0.526,0.548,0.524,91.9,52.2,96.3),
 new makeTrial("trial203_",6,0.816,0.41,0.591,0.493,48.5,90.7),
@@ -2078,7 +2075,7 @@ new makeTrial("trial536_",4,0.0587,0.572,0.467,51.2,5.12,51.8),
 new makeTrial("trial537_",3,0.475,0.938,0.126,1.51,0.396,48.8),
 new makeTrial("trial538_",6,0.588,0.53,0.523,48.4,46.1,9.43),
 new makeTrial("trial539_",4,0.503,0.458,0.85,46.4,91.4,97.2),
-new makeTrial("trial540_",5,0.000148,0.413,0.897,3.65,93.4,92.6),
+new makeTrial("trial540_",5,0.0,0.413,0.897,3.65,93.4,92.6),
 new makeTrial("trial541_",6,0.084,0.167,0.513,92.1,47.9,94.5),
 new makeTrial("trial542_",1,0.00172,0.156,0.163,9.83,49.7,90.5),
 new makeTrial("trial543_",6,0.564,0.858,0.549,8.22,9.51,54.2),
@@ -2360,7 +2357,7 @@ new makeTrial("trial818_",3,0.476,0.833,0.575,45.1,50.4,7.97),
 new makeTrial("trial819_",6,0.423,0.00268,0.941,94.4,94.5,51.7),
 new makeTrial("trial820_",6,0.137,0.817,0.126,7.15,54.8,8.57),
 new makeTrial("trial821_",4,0.478,0.965,0.463,5.43,93.2,0.256),
-new makeTrial("trial822_",4,0.000102,0.972,0.889,93.1,49.8,95.2),
+new makeTrial("trial822_",4,0.0,0.972,0.889,93.1,49.8,95.2),
 new makeTrial("trial823_",5,0.458,0.116,0.109,47,46,49.8),
 new makeTrial("trial824_",2,0.0974,0.503,0.469,2.97,96.3,52.9),
 new makeTrial("trial825_",4,0.827,0.888,0.559,2.56,50.6,45.1),
@@ -2605,3 +2602,15 @@ trials[0].drawMe()
 // var pay_button = button_string("pay1", "payout_noshadow.png","payout_shadow.png","payout_highlight.png","click_feature",0,-200,100,100)
 // document.getElementById("uberdiv").innerHTML += prob_button;
 // document.getElementById("uberdiv").innerHTML += pay_button;
+// function checknow (){
+//     //hjelp.
+//     console.log("straight trialindex")
+//     console.log(trials[trialindex].probfeatures[0]+":"+trials[trialindex].payfeatures[0])
+//     console.log(trials[trialindex].probfeatures[1]+":"+trials[trialindex].payfeatures[1])
+//     console.log(trials[trialindex].probfeatures[2]+":"+trials[trialindex].payfeatures[2])
+//     console.log("Galaxy brain thing the response detection uses")//these match, as they should. Ok then.
+//     console.log(feature_lookup[trials[trialindex].idstring+"prob1"]+":"+feature_lookup[trials[trialindex].idstring+"pay1"])
+//     console.log(feature_lookup[trials[trialindex].idstring+"prob2"]+":"+feature_lookup[trials[trialindex].idstring+"pay2"])
+//     console.log(feature_lookup[trials[trialindex].idstring+"prob3"]+":"+feature_lookup[trials[trialindex].idstring+"pay3"])
+
+// }
