@@ -113,9 +113,9 @@ function makeTrial(idstring, obsbudget, p1, p2, p3, v1, v2, v3){
     this.probfeatures = [p1, p2, p3];
     this.payfeatures = [v1, v2, v3];
     this.drawTime = -1;
-    this.idstring = idstring;
+    this.idstring = idstring;    
 
-    this.infostate = ["-","-","-","-","-","-"];//init: all unobserved. Keep 1-2-3 order while making observations, but used sorted order to save. Ok?
+//    this.infostate = ["-","-","-","-","-","-"];//init: all unobserved. Keep 1-2-3 order while making observations, but used sorted order to save. Ok?
 
     
     feature_lookup[idstring+"prob1"] = p1;
@@ -311,7 +311,7 @@ function click_feature(featureid){
     }
 
     trials[trialindex].obsbudget--;
-
+    
     if(trials[trialindex].obsbudget==0){
 	choice_live = true;
 	var cbs = document.getElementsByClassName("choicebutton");
@@ -341,7 +341,6 @@ function click_feature(featureid){
 }
 
 function click_choice(choiceid){
-    //dragons
     if(trials[trialindex].obsbudget>0){
 	alert("You still have observations left. Please use all your observations before making a choice.");
 	return;
@@ -426,10 +425,27 @@ function click_choice(choiceid){
     trials[trialindex].chose_prob = myprob;
     trials[trialindex].chose_pay = mypay;
     trials[trialindex].chose_expectation = myprob*mypay;
+
+    console.log("You think you're saving:")
+    console.log(trials[trialindex].probfeatures[0]+":"+trials[trialindex].payfeatures[0])
+    console.log(trials[trialindex].probfeatures[1]+":"+trials[trialindex].payfeatures[1])
+    console.log(trials[trialindex].probfeatures[2]+":"+trials[trialindex].payfeatures[2])
+
+    //the only way this makes any sense as a check is if it's the save/db that's scrambling things... is it?
+    trials[trialindex].prob1 = trials[trialindex].probfeatures[0];
+    trials[trialindex].prob2 = trials[trialindex].probfeatures[1];
+    trials[trialindex].prob3 = trials[trialindex].probfeatures[2];
+    trials[trialindex].pay1 = trials[trialindex].payfeatures[0];
+    trials[trialindex].pay2 = trials[trialindex].payfeatures[1];
+    trials[trialindex].pay3 = trials[trialindex].payfeatures[2];
+
     
     trials[trialindex].expectedvalue1 = trials[trialindex].probfeatures[0]*trials[trialindex].payfeatures[0];
     trials[trialindex].expectedvalue2 = trials[trialindex].probfeatures[1]*trials[trialindex].payfeatures[1];
     trials[trialindex].expectedvalue3 = trials[trialindex].probfeatures[2]*trials[trialindex].payfeatures[2];
+
+    delete trials[trialindex].probfeatures;// current me prefers individual cols to cols of vectors. Whatever?
+    delete trials[trialindex].payfeatures;
     
     //information state (sorted as in R strategy search)
     $.post("/response",{myresponse:JSON.stringify(trials[trialindex])},
@@ -2553,9 +2569,9 @@ if(condition == "cond1"){
 }
 
 var trialcounter = 0;
-var phase1_n = 5;
-var phase2_n = 20;
-var phase3_n = 30;
+var phase1_n = 3//5;
+var phase2_n = 3//20;
+var phase3_n = 3//30;
 
 trials.push(new splashScreen("Round One", "This is a practice round. In this part you get to see all the features of all the options."))
 
