@@ -75,8 +75,7 @@ function splashScreen(text, caption){
 	document.getElementById("uberdiv").innerHTML = "<canvas id=\"ubercanvas\" width=\""+canvaswidth+"\" height=\""+canvasheight+"\" ></canvas>";
 	
 	var canvas = document.getElementById("ubercanvas");
-	// console.log("got canvas?")
-	// console.log(canvas);
+
 	
 	var ctx = canvas.getContext('2d');
 	//	ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -298,10 +297,9 @@ function click_feature(featureid){
     //document.getElementById(featureid).style.display = "none";
     trials[trialindex].observations.push(featureid);
     trials[trialindex].obstime.push(Date.now());
-    console.log(featureid)
+    console.log("clicked:"+featureid)
     
     var whoami = featureid.split("_")[1] //oh god so ugly! Oh well.
-    console.log(whoami)
 
     if(!feature_live)return;
     
@@ -391,30 +389,31 @@ function click_choice(choiceid){
     }
 
     //reveal all unobserved features
-    for(var optionid=1; optionid<=3;optionid++){
-	for(var whichfeature = 0; whichfeature<2;whichfeature++){
-	    var features = ["prob","pay"];
+    // for(var optionid=1; optionid<=3;optionid++){
+    // 	for(var whichfeature = 0; whichfeature<2;whichfeature++){
+    // 	    var features = ["prob","pay"];
 	    
-	    var featureid = trials[trialindex].idstring+features[whichfeature]+optionid;
-	    var me = document.getElementById(featureid);
-	    if(me == null)continue;//bad style?
-	    me.parentNode.removeChild(me);
+    // 	    var featureid = trials[trialindex].idstring+features[whichfeature]+optionid;
+    // 	    var me = document.getElementById(featureid);
+    // 	    console.log("flag1")
+    // 	    if(me == null)continue;//bad style?
+    // 	    me.parentNode.removeChild(me);
+    // 	    console.log("flag2")
+    // 	    var mynumber = ""+feature_lookup[featureid];
 	    
-	    var mynumber = ""+feature_lookup[featureid];
-	    
-	    for(var i=0;i<mynumber.length; i++){
-		var mychar = mynumber.charAt(i) == "." ? "pt" : mynumber.charAt(i);
-		var digit_imgstring = "<img class='trial' src='digits/"+mychar+".png' "+
-		    "height='"+digitheight+"px' "+
-		    "width='"+digitwidth+"px' "+
-		    "style=\"position:fixed;"+
-		    "top:"+(me.style.top)+";"+
-		    "left:"+(parseFloat(me.style.left, 10)+digitwidth*i)+"px;"+
-		    "\">";
-		document.getElementById("uberdiv").innerHTML+=digit_imgstring;
-	    }
-	}//whichfeature
-    }//whichoption
+    // 	    for(var i=0;i<mynumber.length; i++){
+    // 		var mychar = mynumber.charAt(i) == "." ? "pt" : mynumber.charAt(i);
+    // 		var digit_imgstring = "<img class='trial' src='digits/"+mychar+".png' "+
+    // 		    "height='"+digitheight+"px' "+
+    // 		    "width='"+digitwidth+"px' "+
+    // 		    "style=\"position:fixed;"+
+    // 		    "top:"+(me.style.top)+";"+
+    // 		    "left:"+(parseFloat(me.style.left, 10)+digitwidth*i)+"px;"+
+    // 		    "\">";
+    // 		document.getElementById("uberdiv").innerHTML+=digit_imgstring;
+    // 	    }
+    // 	}//whichfeature
+    // }//whichoption
 
     //save the response to db:
     trials[trialindex].choice = choiceid.split("_")[0]+"_"+myoption;
@@ -426,10 +425,10 @@ function click_choice(choiceid){
     trials[trialindex].chose_pay = mypay;
     trials[trialindex].chose_expectation = myprob*mypay;
 
-    console.log("You think you're saving:")
-    console.log(trials[trialindex].probfeatures[0]+":"+trials[trialindex].payfeatures[0])
-    console.log(trials[trialindex].probfeatures[1]+":"+trials[trialindex].payfeatures[1])
-    console.log(trials[trialindex].probfeatures[2]+":"+trials[trialindex].payfeatures[2])
+    // console.log("You think you're saving:")
+    // console.log(trials[trialindex].probfeatures[0]+":"+trials[trialindex].payfeatures[0])
+    // console.log(trials[trialindex].probfeatures[1]+":"+trials[trialindex].payfeatures[1])
+    // console.log(trials[trialindex].probfeatures[2]+":"+trials[trialindex].payfeatures[2])
 
     //the only way this makes any sense as a check is if it's the save/db that's scrambling things... is it?
     trials[trialindex].prob1 = trials[trialindex].probfeatures[0];
@@ -446,6 +445,9 @@ function click_choice(choiceid){
 
     delete trials[trialindex].probfeatures;// current me prefers individual cols to cols of vectors. Whatever?
     delete trials[trialindex].payfeatures;
+
+    console.log("saving:")
+    console.log(trials[trialindex])
     
     //information state (sorted as in R strategy search)
     $.post("/response",{myresponse:JSON.stringify(trials[trialindex])},
