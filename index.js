@@ -155,7 +155,7 @@ app.post('/response',function(req,res){
     )    
     // connection using created pool
     pool.connect(function(err, client, done) {
-    	client.query('insert into responses values ($1,$2)', //NOTE this assumes table responses exists with cols 'time', 'responseobj' !
+    	client.query('insert into responses values ($1, $2)', //NOTE this assumes table responses exists with cols 'time', 'responseobj' !
 		     [Date.now(),
 		     req.body.myresponse],
     		     function(err, result){
