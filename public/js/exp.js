@@ -297,7 +297,7 @@ function click_feature(featureid){
     //document.getElementById(featureid).style.display = "none";
     trials[trialindex].observations.push(featureid);
     trials[trialindex].obstime.push(Date.now());
-    console.log("clicked:"+featureid)
+//    console.log("clicked:"+featureid)
     
     var whoami = featureid.split("_")[1] //oh god so ugly! Oh well.
 
@@ -448,7 +448,7 @@ function click_choice(choiceid){
 
     console.log("saving:")
     console.log(trials[trialindex])
-    
+    checknow()
     //information state (sorted as in R strategy search)
     $.post("/response",{myresponse:JSON.stringify(trials[trialindex])},
 	   function(success){
@@ -2620,15 +2620,17 @@ trials[0].drawMe()
 // var pay_button = button_string("pay1", "payout_noshadow.png","payout_shadow.png","payout_highlight.png","click_feature",0,-200,100,100)
 // document.getElementById("uberdiv").innerHTML += prob_button;
 // document.getElementById("uberdiv").innerHTML += pay_button;
-// function checknow (){
-//     //hjelp.
-//     console.log("straight trialindex")
-//     console.log(trials[trialindex].probfeatures[0]+":"+trials[trialindex].payfeatures[0])
-//     console.log(trials[trialindex].probfeatures[1]+":"+trials[trialindex].payfeatures[1])
-//     console.log(trials[trialindex].probfeatures[2]+":"+trials[trialindex].payfeatures[2])
-//     console.log("Galaxy brain thing the response detection uses")//these match, as they should. Ok then.
-//     console.log(feature_lookup[trials[trialindex].idstring+"prob1"]+":"+feature_lookup[trials[trialindex].idstring+"pay1"])
-//     console.log(feature_lookup[trials[trialindex].idstring+"prob2"]+":"+feature_lookup[trials[trialindex].idstring+"pay2"])
-//     console.log(feature_lookup[trials[trialindex].idstring+"prob3"]+":"+feature_lookup[trials[trialindex].idstring+"pay3"])
 
-// }
+var superstition = "";
+function checknow (){
+    //hjelp. Mof'n js works when you're watching it. I'm so sad. This can't possibly be doing anything... right?
+    superstition = ("straight trialindex");
+    superstition = (trials[trialindex].probfeatures[0]+":"+trials[trialindex].payfeatures[0]);
+    superstition = (trials[trialindex].probfeatures[1]+":"+trials[trialindex].payfeatures[1]);
+    superstition = (trials[trialindex].probfeatures[2]+":"+trials[trialindex].payfeatures[2]);
+    superstition = ("Galaxy brain thing the response detection uses")//these match, as they should. Ok then.;
+    superstition = (feature_lookup[trials[trialindex].idstring+"prob1"]+":"+feature_lookup[trials[trialindex].idstring+"pay1"]);
+    superstition = (feature_lookup[trials[trialindex].idstring+"prob2"]+":"+feature_lookup[trials[trialindex].idstring+"pay2"]);
+    superstition = (feature_lookup[trials[trialindex].idstring+"prob3"]+":"+feature_lookup[trials[trialindex].idstring+"pay3"]);
+
+}
