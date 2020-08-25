@@ -56,6 +56,7 @@ function get_obsbudget(){
 var feature_lookup = {};
 
 function splashScreen(text, caption){
+    this.isatrial = false;
     this.text = text;
     this.trialtype = "splash"
     
@@ -103,7 +104,7 @@ function splashScreen(text, caption){
 
 function makeTrial(idstring, obsbudget, p1, p2, p3, v1, v2, v3){
 
-
+    this.isatrial = true; //as opposed to is a splash screen
     this.ppntID = localStorage.getItem("ppntID");
     this.obsbudget = obsbudget; //tracker, decrements.
     this.obsbudget_initial = obsbudget; //recorder, fixed.
@@ -446,6 +447,8 @@ function click_choice(choiceid){
     delete trials[trialindex].probfeatures;// current me prefers individual cols to cols of vectors. Whatever?
     delete trials[trialindex].payfeatures;
 
+    trials[trialindex].myinstructions = localStorage.getItem("myinstructions");
+    
     console.log("saving:")
     console.log(trials[trialindex])
     checknow()
@@ -467,10 +470,10 @@ function nextTrial(){ //assumes all DOM elements associated with a trial have cl
     // }
     document.getElementById("abs_holder_div").innerHTML = "";
 
-    if(trials[trialindex].probfeatures!=null){ //ie if you're on a real trial not a splash screen.
-    var trialvals = [trials[trialindex].payfeatures[0]*trials[trialindex].probfeatures[0],
-				     trials[trialindex].payfeatures[1]*trials[trialindex].probfeatures[1],
-				     trials[trialindex].payfeatures[2]*trials[trialindex].probfeatures[2]]
+    if(trials[trialindex].isatrial){ //ie if you're on a real trial not a splash screen.
+    var trialvals = [trials[trialindex].pay1*trials[trialindex].prob1,
+				     trials[trialindex].pay2*trials[trialindex].prob2,
+				     trials[trialindex].pay3*trials[trialindex].prob3]
     
     superbest = superbest + Math.max(trialvals[0],trialvals[1],trialvals[2]); //super best only ever harvests expected value. Ok?
 
