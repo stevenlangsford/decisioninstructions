@@ -2560,12 +2560,6 @@ new makeTrial("trial999a_",get_obsbudget(),0.0964,0.533,0.479,46.6,6.04,99.5)
 
 var trials = [];
 
-//old version: just two conds.
-
-// for(var i = 0; i < n_trials; i++){
-//     condition == "cond1" ? trials.push(cond1_trialpool[i]) : trials.push(cond2_trialpool[i]);
-// }
-
 var mytrials;
 if(condition == "cond1"){
     mytrials = cond1_trialpool
@@ -2574,9 +2568,9 @@ if(condition == "cond1"){
 }
 
 var trialcounter = 0;
-var phase1_n = 3//5;
-var phase2_n = 3//20;
-var phase3_n = 3//30;
+var phase1_n = 5;
+var phase2_n = 20;
+var phase3_n = 30;
 
 trials.push(new splashScreen("Round One", "This is a practice round. In this part you get to see all the features of all the options."))
 
